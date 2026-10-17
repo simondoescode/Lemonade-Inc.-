@@ -45,3 +45,27 @@
  .mobile-bottom-nav button small{font-size:10px}
  .mobile-bottom-nav button>span{font-size:21px}
 }
+
+/* Pixel-tycoon art direction: colourful arcade framing without losing readable controls. */
+:root{--ink:#403b51;--muted:#6f6477;--paper:#fff8e3;--cream:#fff0c1;--line:#8e6577;--shadow:0 5px 0 #805b68,0 12px 0 #493b5740}
+body{background:repeating-linear-gradient(0deg,transparent 0 38px,#ffffff12 38px 40px),linear-gradient(145deg,#83d6ba 0%,#c4e8a6 46%,#fbe19e 100%);color:var(--ink)}
+.panel-card,.mini-card,.scene-card,.forecast-card{border:3px solid #916b7b;border-radius:11px;box-shadow:0 5px 0 #694f63,0 12px 22px #55405a25}
+.scene-card{background:#fff6dc}
+.scene-head{background:#ffdfa0;border-bottom:3px solid #92647a}
+.scene-head h2,.panel-title h2{letter-spacing:-.5px}
+.scene-stage{background:#97dce4;image-rendering:pixelated;border-bottom:4px solid #805b67}
+.scene-art svg{image-rendering:pixelated}
+.scene-toast{border-radius:5px;border-color:#85576b;box-shadow:4px 5px 0 #634a62}
+.scene-stats{background:#ffefbc;border-color:#ad8790}
+.scene-stats>div{border-right:2px solid #e1bb9e}
+.scene-action{background:#fff3d6}
+.primary-button{background:#ffd354;color:#4d3b53;border:3px solid #875a68;border-radius:7px;box-shadow:0 5px 0 #8e5b50;text-transform:uppercase}
+.primary-button:hover:not(:disabled){box-shadow:0 7px 0 #8e5b50}
+.metric{border:3px solid #926c7b;background:#fff4cf;border-radius:8px;box-shadow:0 4px 0 #785d6b}
+.metric-cash{background:#ffe06f}
+.tab,.bundle,.ad-button,.tiny-button,.stepper button{border-radius:6px}
+.tab{border-color:#976f78;box-shadow:0 3px 0 #705365;background:#fff0cb}
+.tab.active{background:#287f69;border-color:#355f64;box-shadow:0 4px 0 #314f59}
+.welcome-card{border-radius:10px;border-color:#906576;background:linear-gradient(135deg,#ffdc6a,#ffb65e);box-shadow:0 5px 0 #885969}
+.forecast-card{background:#d4f1d7}
+@media(max-width:830px){.mobile-bottom-nav{background:#fff0c8;border-top:3px solid #88677b;box-shadow:0 -5px 0 #624c5b25}.mobile-bottom-nav button{border-radius:7px}.mobile-bottom-nav button[aria-current="page"]{background:#297e68;box-shadow:0 3px 0 #375c60}}
