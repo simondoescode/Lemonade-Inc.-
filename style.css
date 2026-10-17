@@ -14,3 +14,34 @@
 
 /* Keep the PWA install action hidden until the browser offers installation. */
 #install-app[hidden]{display:none!important}
+
+/* Thumb-friendly PWA navigation: visible only on phone/tablet layouts. */
+.mobile-bottom-nav{display:none}
+@media(max-width:830px){
+  body{--mobile-nav-height:76px}
+  .app-shell{padding-bottom:calc(var(--mobile-nav-height) + env(safe-area-inset-bottom,0px) + 28px)}
+  .mobile-bottom-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:fixed;bottom:0;left:0;right:0;z-index:80;padding:8px max(8px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px));background:rgba(255,254,248,.97);border-top:1px solid #cbded4;box-shadow:0 -8px 30px #173b4620;backdrop-filter:blur(16px)}
+  .mobile-bottom-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;min-height:54px;padding:5px 2px;border:0;border-radius:14px;background:transparent;color:#52716c;font-weight:900}
+  .mobile-bottom-nav button>span{font-size:23px;line-height:1.15}
+  .mobile-bottom-nav button small{font-size:11px;letter-spacing:.1px}
+  .mobile-bottom-nav button[aria-current="page"]{background:#147e61;color:#fff;box-shadow:0 3px 0 #075b47}
+  .mobile-bottom-nav button:focus-visible{outline-offset:-3px}
+  body:not([data-mobile-view="home"]) .right-column{display:none}
+  body[data-mobile-view="home"] .left-column{display:none}
+  body:not([data-mobile-view="home"]) .left-column{grid-row:1}
+  .welcome-card{display:none}
+  .tabs{display:none}
+  body[data-mobile-view="business"] .tabs{display:flex;flex-wrap:wrap;overflow:visible;gap:7px;padding:4px 0 0}
+  body[data-mobile-view="business"] .tabs .tab{display:none}
+  body[data-mobile-view="business"] .tabs .tab[data-tab="pricing"],
+  body[data-mobile-view="business"] .tabs .tab[data-tab="locations"],
+  body[data-mobile-view="business"] .tabs .tab[data-tab="upgrades"],
+  body[data-mobile-view="business"] .tabs .tab[data-tab="staff"]{display:flex;flex:1 1 calc(25% - 7px);min-width:65px;box-shadow:none}
+  .panel-card{min-height:calc(65dvh - 90px)}
+  .notification{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+  .footer{padding-bottom:12px}
+}
+@media(max-width:380px){
+ .mobile-bottom-nav button small{font-size:10px}
+ .mobile-bottom-nav button>span{font-size:21px}
+}

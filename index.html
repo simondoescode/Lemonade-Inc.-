@@ -63,6 +63,13 @@
         </div>
       </section>
     </main>
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Main game navigation">
+      <button type="button" data-mobile-nav="home" aria-current="page"><span aria-hidden="true">🏪</span><small>Stand</small></button>
+      <button type="button" data-mobile-nav="recipe"><span aria-hidden="true">🍹</span><small>Recipe</small></button>
+      <button type="button" data-mobile-nav="supplies"><span aria-hidden="true">📦</span><small>Stock</small></button>
+      <button type="button" data-mobile-nav="business"><span aria-hidden="true">⚡</span><small>Business</small></button>
+      <button type="button" data-mobile-nav="results"><span aria-hidden="true">📊</span><small>Stats</small></button>
+    </nav>
     <footer class="footer"><span>© Lemonade Inc. — An original, independent browser game.</span><div><button id="export-save" class="footer-link">Export save</button><button id="import-save" class="footer-link">Import save</button><input id="import-file" type="file" accept="application/json,.json" hidden><button id="new-game" class="footer-link">New game</button></div></footer>
   </div>
   <div class="overlay" id="overlay" hidden><div class="dialog" id="dialog" role="dialog" aria-modal="true" aria-label="Game menu"></div></div>
