@@ -11,3 +11,6 @@
 /* Lemonade Inc. identity */
 .welcome-brand img{width:145px;max-height:115px;object-fit:contain;background:#fff;border-radius:13px;padding:4px;box-shadow:0 2px 0 #e8bc51}.brand-logo{padding:4px;background:#fff}.brand-words strong{letter-spacing:-1.5px}.brand-words em{color:#117b60}
 @media(max-width:670px){.welcome-brand img{width:112px;max-height:88px}.welcome-brand span{font-size:9px}.brand-words strong{font-size:clamp(19px,5vw,25px)}}
+
+/* Keep the PWA install action hidden until the browser offers installation. */
+#install-app[hidden]{display:none!important}
