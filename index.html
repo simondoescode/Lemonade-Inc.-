@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123b48">
+  <meta name="description" content="Lemonade Inc. — a bright little lemonade business simulation. Mix the perfect recipe, grow your stand, and turn $40 into a lemonade empire.">
+  <meta property="og:title" content="Lemonade Inc. — Squeeze Street">
+  <meta property="og:description" content="How far can you grow your little lemonade stand? Play free in your browser.">
+  <link rel="icon" type="image/svg+xml" href="./assets/icon.svg">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./style.css">
+  <title>Lemonade Inc. — The Lemonade Business Game</title>
+</head>
+<body>
+  <div class="app-shell" id="app">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Squeeze Street home">
+        <img class="brand-logo" src="./assets/lemonade-inc-icon.webp" alt="Lemonade Inc. icon">
+        <span class="brand-words"><small class="brand-company">THE LEMONADE BUSINESS GAME</small><strong>LEMONADE <em>INC.</em></strong><small>SQUEEZE STREET · YOUR EMPIRE</small></span>
+      </a>
+      <div class="top-metrics" aria-label="Game statistics">
+        <div class="metric"><span class="metric-icon">📅</span><span><small>GAME DAY</small><b id="metric-day">01</b></span></div>
+        <div class="metric"><span class="metric-icon">🥤</span><span><small>CUPS SOLD</small><b id="metric-sold">0</b></span></div>
+        <div class="metric metric-cash"><span class="metric-icon">💰</span><span><small>YOUR CASH</small><b id="metric-cash">$40.00</b></span></div>
+      </div>
+      <button id="sound-toggle" class="icon-button" aria-label="Enable sound" title="Toggle game sounds">🔇</button>
+    </header>
+    <main class="main-grid">
+      <section class="left-column" aria-label="Manage your lemonade stand">
+        <div class="welcome-card">
+          <div><p class="eyebrow">THE SWEET LIFE STARTS HERE</p><h1>Small stand.<br><span>Big dreams.</span></h1><p>Mix, sell and grow your very own lemonade business.</p><div class="welcome-brand"><img src="./assets/lemonade-inc-logo.webp" alt="Lemonade Inc."><span>Build your lemonade empire</span></div></div>
+          <span class="mascot-illustration" aria-hidden="true">🍋<span>✦</span></span>
+        </div>
+        <nav class="tabs" id="game-tabs" aria-label="Business controls">
+          <button type="button" class="tab active" data-tab="recipe" aria-selected="true"><span>🍹</span> Recipe</button>
+          <button type="button" class="tab" data-tab="supplies" aria-selected="false"><span>📦</span> Stock</button>
+          <button type="button" class="tab" data-tab="pricing" aria-selected="false"><span>💸</span> Pricing</button>
+          <button type="button" class="tab" data-tab="locations" aria-selected="false"><span>📍</span> Places</button>
+          <button type="button" class="tab" data-tab="upgrades" aria-selected="false"><span>⚡</span> Upgrades</button>
+          <button type="button" class="tab" data-tab="staff" aria-selected="false"><span>🧑‍🍳</span> Staff</button>
+          <button type="button" class="tab" data-tab="results" aria-selected="false"><span>📈</span> Stats</button>
+        </nav>
+        <div class="panel-card" id="control-panel" aria-live="polite"></div>
+      </section>
+      <section class="right-column" aria-label="Town and daily business">
+        <div class="forecast-card">
+          <div class="forecast-main"><div class="forecast-symbol" id="weather-icon">🌤️</div><div><small>TODAY'S FORECAST</small><strong id="weather-temp">25°C</strong><span id="weather-name">Partly cloudy</span></div></div>
+          <div class="forecast-news"><span class="news-badge">📰 TOWN BUZZ</span><strong id="news-title">Your new stand is ready!</strong><p id="news-effect">Prepare your supplies and open for business.</p></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-head"><div><span class="scene-live"><i></i> <span id="scene-status">READY TO OPEN</span></span><h2 id="scene-location">The Suburbs</h2></div><span class="scene-day" id="scene-day">DAY 01</span></div>
+          <div class="scene-stage" id="scene-stage" role="img" aria-label="Illustrated lemonade stand and neighbourhood">
+            <div id="scene-art" class="scene-art"></div><div id="scene-people" class="scene-people" aria-hidden="true"></div>
+            <div class="scene-toast" id="scene-toast" aria-hidden="true"></div>
+          </div>
+          <div class="scene-stats"><div><small>👣 PASSERS-BY</small><b id="live-visitors">—</b></div><div><small>🥤 DRINKS SOLD</small><b id="live-sold">—</b></div><div><small>💵 REVENUE</small><b id="live-revenue">—</b></div><div><small>❤️ SATISFACTION</small><b id="live-satisfaction">—</b></div></div>
+          <div class="scene-action" id="scene-action"><button type="button" class="primary-button" id="open-day">OPEN FOR BUSINESS <span>➜</span></button><p id="action-hint">Ready to make some customers smile?</p></div>
+        </div>
+        <div class="bottom-grid">
+          <div class="mini-card" id="inventory-card"></div>
+          <div class="mini-card" id="insight-card"></div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer"><span>© Lemonade Inc. — An original, independent browser game.</span><div><button id="export-save" class="footer-link">Export save</button><button id="import-save" class="footer-link">Import save</button><input id="import-file" type="file" accept="application/json,.json" hidden><button id="new-game" class="footer-link">New game</button></div></footer>
+  </div>
+  <div class="overlay" id="overlay" hidden><div class="dialog" id="dialog" role="dialog" aria-modal="true" aria-label="Game menu"></div></div>
+  <div class="notification" id="notification" role="status" aria-live="polite"></div>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
