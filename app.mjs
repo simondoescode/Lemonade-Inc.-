@@ -115,4 +115,25 @@ $('import-file').addEventListener('change',async ev=>{const file=ev.target.files
 $('overlay').addEventListener('click',event=>{if(event.target===$('overlay')&&!firstRun)hideDialog();});
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!firstRun)hideDialog();});
 render();if(firstRun){chooseGameDialog(true);}else if(game.finished){phase='report';render();challengeDialog();}
-if('serviceWorker'in navigator&&window.location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+
+
+// Surface the native browser install prompt only when the browser offers it.
+let installEvent;
+window.addEventListener('beforeinstallprompt',event=>{
+  event.preventDefault();
+  installEvent=event;
+  const button=document.getElementById('install-app');
+  if(button)button.hidden=false;
+});
+document.getElementById('install-app')?.addEventListener('click',async()=>{
+  if(!installEvent)return;
+  const event=installEvent;
+  installEvent=null;
+  document.getElementById('install-app').hidden=true;
+  await event.prompt();
+});
+window.addEventListener('appinstalled',()=>{
+  installEvent=null;
+  const button=document.getElementById('install-app');
+  if(button)button.hidden=true;
+});
