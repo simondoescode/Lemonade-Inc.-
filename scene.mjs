@@ -1,19 +1,82 @@
-/* Original vector illustrations. Everything is drawn in SVG; no commercial game assets. */
-const tree=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><ellipse cy="10" rx="45" ry="15" fill="#26544a" opacity=".16"/><path d="M-8 0v-72h16V0" fill="#9d6046" stroke="#6c5741" stroke-width="3"/><circle cy="-90" r="40" fill="#43ad78" stroke="#237953" stroke-width="6"/><circle cx="-20" cy="-106" r="23" fill="#63c68b"/><circle cx="17" cy="-100" r="25" fill="#6dd18c"/></g>`;
-const cloud=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})" fill="#fffef0" opacity=".92"><ellipse cx="0" cy="8" rx="70" ry="22"/><circle cx="-32" cy="-4" r="26"/><circle cx="8" cy="-18" r="37"/><circle cx="43" cy="-1" r="27"/></g>`;
-const windowBox=(x,y)=>`<rect x="${x}" y="${y}" width="37" height="51" rx="4" fill="#6db6c4" stroke="#265760" stroke-width="5"/><path d="M${x+18} ${y}v50 M${x} ${y+26}h36" stroke="#eaf6e7" stroke-width="4"/>`;
-const house=(x,y,c='#f7b57c',scale=1)=>`<g transform="translate(${x} ${y}) scale(${scale})"><rect x="0" y="75" width="188" height="171" rx="5" fill="${c}" stroke="#375963" stroke-width="5"/><path d="M-15 80 89 2l115 78Z" fill="#dc625c" stroke="#375963" stroke-width="5"/>${windowBox(22,112)}${windowBox(130,112)}<rect x="73" y="166" width="44" height="80" rx="4" fill="#fff1a6" stroke="#375963" stroke-width="5"/><circle cx="106" cy="208" r="4" fill="#2a665c"/></g>`;
-const skyline=()=>`<g>${[0,1,2,3,4,5,6].map((n)=>{const x=n*143-24, h=175+(n*67%100);return `<rect x="${x}" y="${220-h}" width="120" height="${h+75}" fill="${['#93cad4','#87b9c8','#b3ded3','#f8bd98'][n%4]}" stroke="#40767a" stroke-width="5" rx="3"/>${Array.from({length:4},(_,j)=>Array.from({length:3},(_,i)=>`<rect x="${x+14+i*33}" y="${234-h+j*43}" width="21" height="29" rx="2" fill="#f7f0b4" stroke="#4b8085" stroke-width="3"/>`).join('')).join('')}`}).join('')}</g>`;
-const beach=()=>`<path d="M0 220 Q200 182 420 240 T900 195V530H0Z" fill="#f9df95"/><path d="M0 217 Q200 170 420 223 T900 188V259Q650 282 440 266T0 292Z" fill="#86e0dc"/><path d="M0 221 Q200 180 420 233 T900 200" fill="none" stroke="#fffef4" stroke-width="13"/>${[100,750,820].map((x,i)=>`<g transform="translate(${x} ${340+i*24})"><path d="M0 0q-24-72 0-154" fill="none" stroke="#956b4b" stroke-width="12"/><path d="M0-153q-80-39-125-5 69-14 125 15 17-51 88-40-45 17-76 43 46-6 71 34-58-29-83-37Z" fill="#208c70" stroke="#0b7667" stroke-width="5"/></g>`).join('')}`;
-const park=()=>`<rect y="205" width="900" height="320" fill="#7ccc98"/><path d="M-30 375 930 275" stroke="#e7c79d" stroke-width="74"/>${tree(120,330,1.0)}${tree(790,312,1.15)}${tree(45,255,.65)}<ellipse cx="745" cy="440" rx="90" ry="31" fill="#93e0dc" stroke="#4f9f9d" stroke-width="6"/>`;
-const station=()=>`<rect y="210" width="900" height="300" fill="#bcd3d0"/><rect x="0" y="170" width="900" height="123" fill="#e6c67d" stroke="#587477" stroke-width="7"/><path d="M0 170 135 75h650L900 170Z" fill="#69b6b9" stroke="#3a767e" stroke-width="7"/><rect x="590" y="173" width="180" height="72" rx="5" fill="#f5ecbd" stroke="#397481" stroke-width="6"/><text x="680" y="220" text-anchor="middle" font-size="31" font-weight="900" fill="#3c6f7a">TRAIN</text><path d="M-20 405H940M-20 450H940" stroke="#7a9797" stroke-width="16"/>`;
-const mall=()=>`<rect y="195" width="900" height="340" fill="#b8d7ca"/><rect x="-20" y="75" width="940" height="225" rx="5" fill="#fbcd9b" stroke="#5e8f8b" stroke-width="8"/><rect x="110" y="100" width="678" height="156" rx="9" fill="#80d0c6" stroke="#459a98" stroke-width="8"/><path d="M200 100v155M310 100v155M420 100v155M530 100v155M640 100v155M750 100v155" stroke="#d7f7ec" stroke-width="8"/><rect x="280" y="37" width="340" height="70" rx="10" fill="#ffdfa0" stroke="#658d8a" stroke-width="6"/><text x="450" y="83" text-anchor="middle" fill="#287a72" font-size="33" font-weight="900">PLAZA</text>`;
-const city=()=>`${skyline()}<rect y="273" width="900" height="255" fill="#abb9b6"/><path d="M0 360H900" stroke="#879e9d" stroke-width="76"/><path d="M0 360H900" stroke="#f7f6de" stroke-dasharray="53 44" stroke-width="6"/>`;
-const suburb=()=>`<path d="M0 230h900v300H0Z" fill="#91ce9f"/>${house(-45,121,'#f6ba83',.79)}${house(670,93,'#ffe0a3',.93)}${tree(280,310,.8)}${tree(810,306,.68)}`;
-const commonGround=(id)=>`<path d="M0 430Q200 395 470 435T900 407V520H0Z" fill="${id==='beach'?'#f6d38d':'#c7d2ba'}"/><path d="M0 448Q200 413 470 453T900 425" stroke="#f6f5d8" stroke-width="8" fill="none" opacity=".7"/>`;
-const stand=()=>`<g transform="translate(309 190)"><ellipse cx="140" cy="277" rx="177" ry="29" fill="#3f7268" opacity=".2"/><rect x="32" y="101" width="221" height="177" rx="8" fill="#f6ce73" stroke="#245a60" stroke-width="9"/><rect x="26" y="144" width="232" height="105" fill="#ffeca3"/><path d="M28 195h227v53H28Z" fill="#dff3cf"/><rect x="15" y="160" width="250" height="18" rx="6" fill="#315c5f"/><path d="M-10 93 45 18h184l52 75Z" fill="#ec5f5c" stroke="#28535d" stroke-width="8"/><path d="M45 18 25 93h47l18-75Zm92 0-1 75h50l-7-75Z" fill="#fff1b6"/><path d="M-10 93v21q23 27 47 0 23 27 47 0 24 27 48 0 25 27 49 0 23 27 48 0 26 27 52 0V93Z" fill="#e75657" stroke="#28535d" stroke-width="7"/><path d="M36 93v21q23 27 47 0V93Zm99 0v21q25 27 49 0V93Zm98 0v21q26 27 48 0V93Z" fill="#fff1b6"/><rect x="54" y="195" width="186" height="46" rx="5" fill="#148768"/><text x="147" y="226" text-anchor="middle" fill="#fff8d1" font-family="Trebuchet MS, sans-serif" font-size="28" font-weight="1000" letter-spacing="3">FRESH!</text><g transform="translate(90 139)"><path d="M30 0v44" stroke="#255c61" stroke-width="6"/><path d="M0 0h61" stroke="#255c61" stroke-width="6"/><ellipse cx="29" cy="20" rx="24" ry="12" fill="#f5cf3e" stroke="#39805c" stroke-width="4"/><path d="M26 8q-3-15 13-17" fill="none" stroke="#39805c" stroke-width="4"/></g><path d="M39 277V180M249 277V180" stroke="#245a60" stroke-width="9"/><rect x="98" y="247" width="90" height="30" rx="7" fill="#f4f7d7" stroke="#275d63" stroke-width="6"/></g>`;
+/* Original isometric pixel-art town. All geometry is generated locally, no third-party assets. */
+const rect=(x,y,w,h,c,more='')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}" ${more}/>`;
+const poly=(pts,c,more='')=>`<polygon points="${pts}" fill="${c}" ${more}/>`;
+const line=(x1,y1,x2,y2,c,w=3)=>`<path d="M${x1} ${y1}L${x2} ${y2}" stroke="${c}" stroke-width="${w}" fill="none"/>`;
+const iso=(x,y,w,d,h,front='#ffc875',side='#c9784c',top='#ffe6a2')=>{
+ const dx=d,dy=-Math.round(d*.52);
+ return `<g shape-rendering="crispEdges">${poly(`${x},${y-h} ${x+dx},${y-h+dy} ${x+w+dx},${y-h+dy} ${x+w},${y-h}`,top)}${poly(`${x+w},${y-h} ${x+w+dx},${y-h+dy} ${x+w+dx},${y+dy} ${x+w},${y}`,side)}${rect(x,y-h,w,h,front)}${line(x,y-h,x+w,y-h,'#654d53',3)}${line(x+w,y-h,x+w+dx,y-h+dy,'#654d53',3)}</g>`;
+};
+const tuft=(x,y,c='#469d55')=>`${rect(x,y,8,4,c)}${rect(x+4,y-5,7,5,c)}${rect(x+12,y+1,5,3,'#2d8053')}`;
+const tree=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})" shape-rendering="crispEdges">
+ <ellipse rx="43" ry="14" fill="#39754c" opacity=".23"/>
+ ${rect(-7,-68,17,70,'#9e663f')}${rect(3,-58,7,58,'#71482f')}
+ ${rect(-39,-123,67,65,'#247f4b')}${rect(-48,-111,76,42,'#268f53')}
+ ${rect(-32,-143,57,39,'#45bd61')}${rect(-19,-155,34,28,'#69d977')}
+ ${rect(-40,-117,18,17,'#77e378')}${rect(12,-134,19,21,'#70d875')}
+ ${rect(19,-88,20,16,'#1b714c')}
+ </g>`;
+const cloud=(x,y)=>`<g shape-rendering="crispEdges">${rect(x+24,y,75,16,'#fff9d8')}${rect(x,y+17,135,20,'#fff9d8')}${rect(x+45,y-16,46,19,'#fff9d8')}${rect(x+18,y+36,92,7,'#d8eff0')}</g>`;
+const person=(x,y,shirt='#f15b65',scale=1)=>`<g transform="translate(${x} ${y}) scale(${scale})" shape-rendering="crispEdges">${rect(-10,-49,20,17,'#f7bf8b')}${rect(-13,-34,26,21,shirt)}${rect(-11,-13,9,17,'#3e5b80')}${rect(3,-13,9,17,'#3e5b80')}${rect(-10,-51,20,6,'#5c3c36')}${rect(-6,-44,3,3,'#433837')}${rect(4,-44,3,3,'#433837')}</g>`;
+const building=(x,y,w,d,h,color,roof='#de6960')=>`<g>${iso(x,y,w,d,h,color,'#bf8065','#ffe1ae')}
+ ${rect(x+Math.round(w*.16),y-h+26,28,34,'#65c9dc', 'stroke="#fff2ba" stroke-width="5"')}
+ ${rect(x+Math.round(w*.6),y-h+26,28,34,'#65c9dc','stroke="#fff2ba" stroke-width="5"')}
+ ${rect(x+Math.round(w*.42),y-57,36,57,'#885747')}
+ ${rect(x+Math.round(w*.42)+26,y-32,4,4,'#ffda64')}
+ ${poly(`${x-9},${y-h} ${x+d-9},${y-h-Math.round(d*.52)-34} ${x+w+d+9},${y-h-Math.round(d*.52)-34} ${x+w+9},${y-h}`,roof)}
+ ${line(x-9,y-h,x+w+9,y-h,'#773f51',5)}
+ </g>`;
+const shop=(x,y,label,color)=>`<g>${iso(x,y,162,51,126,color,'#bf7952','#f9e9bd')}
+ ${rect(x+15,y-92,128,57,'#4d9daf','stroke="#ffe9b4" stroke-width="6"')}
+ ${rect(x+9,y-126,145,23,'#e65d64')}${rect(x+26,y-126,18,23,'#fff2ba')}${rect(x+63,y-126,18,23,'#fff2ba')}${rect(x+99,y-126,18,23,'#fff2ba')}
+ ${rect(x+21,y-170,117,30,'#ffe26c','stroke="#7d5262" stroke-width="4"')}
+ <text x="${x+80}" y="${y-149}" font-family="monospace" text-anchor="middle" font-size="18" font-weight="900" fill="#674153">${label}</text></g>`;
+const stand=()=>`<g shape-rendering="crispEdges">
+ <ellipse cx="490" cy="407" rx="155" ry="22" fill="#477752" opacity=".25"/>
+ ${iso(360,398,212,53,120,'#f2c46d','#d78e47','#ffe39a')}
+ ${rect(371,308,190,80,'#ffe09a')}${rect(371,367,190,24,'#e9a746')}
+ ${rect(381,350,167,29,'#258c69')}${rect(385,352,159,22,'#267e61')}
+ <text x="465" y="369" text-anchor="middle" font-family="monospace" font-weight="900" font-size="16" fill="#fff7ca">LEMONADE!</text>
+ ${rect(367,257,10,57,'#76504a')}${rect(563,244,11,74,'#76504a')}
+ ${poly('340,277 408,220 602,220 576,277','#f76d56')}
+ ${poly('357,277 420,220 447,220 390,277','#fff0a9')}
+ ${poly('424,277 481,220 512,220 459,277','#fff0a9')}
+ ${poly('492,277 540,220 570,220 525,277','#fff0a9')}
+ ${poly('340,277 576,277 576,303 554,303 554,294 529,294 529,303 504,303 504,294 479,294 479,303 454,303 454,294 429,294 429,303 404,303 404,294 379,294 379,303 354,303 354,294 340,294','#e65452')}
+ ${rect(355,277,28,17,'#fff1a1')}${rect(407,277,27,17,'#fff1a1')}${rect(458,277,28,17,'#fff1a1')}${rect(509,277,28,17,'#fff1a1')}
+ ${rect(391,319,35,26,'#7ac0c5')}${rect(396,311,25,8,'#eef9e0')}
+ ${rect(519,326,20,23,'#f7d04a')}${rect(522,320,12,7,'#fff6be')}
+ ${rect(445,388,38,12,'#f3e9ac')}${rect(452,394,22,10,'#ba8648')}
+ ${rect(590,343,30,30,'#e4a651')}${rect(595,348,20,10,'#f5dd7a')}
+ ${person(341,390,'#f15d69',.88)}
+ </g>`;
+const environment=(id)=>{
+ if(id==='suburbs')return `${building(68,292,160,56,128,'#ffc78b')}${building(676,278,146,58,116,'#f8da9d','#e76d6d')}${tree(272,300,.65)}${tree(850,302,.7)}`;
+ if(id==='park')return `${tree(115,314,1.12)}${tree(775,288,1.15)}${tree(280,255,.62)}${rect(635,299,120,20,'#80cfb6')}${rect(650,306,85,10,'#b3eddd')}`;
+ if(id==='beach')return `${poly('0,230 900,180 900,490 0,490','#f3d782')}${poly('0,188 900,145 900,211 0,260','#5cc9d0')}${poly('0,248 900,199 900,214 0,262','#fff2ce')}${tree(130,320,.83)}${tree(800,296,.68)}`;
+ if(id==='station')return `${shop(55,304,'STATION','#e5cb92')}${iso(676,300,158,48,140,'#c3bec2','#8d9ca2','#f2d59c')}${rect(708,180,96,29,'#f7e4a4')}<text x="756" y="200" font-family="monospace" font-size="17" font-weight="900" text-anchor="middle" fill="#65545d">TRAIN</text>`;
+ if(id==='downtown')return `${[0,1,2,3,4,5].map((i)=>iso(i*160-22,306,115,39,155+(i%3)*45,['#6facbc','#e5ae83','#8cc3a1'][i%3],'#678b9f','#d6d8bd')).join('')}${shop(690,322,'CAFE','#f6b87c')}`;
+ return `${shop(52,300,'PLAZA','#ffc09a')}${shop(684,310,'SHOPS','#f1d397')}${tree(280,291,.65)}`;
+};
+const pavement=()=>`${poly('0,317 472,219 900,315 900,490 0,490','#aed18e')}
+ ${poly('0,365 470,262 900,350 900,456 480,361 0,474','#e3cba4')}
+ ${poly('0,393 475,293 900,379 900,403 480,318 0,421','#c79e79')}
+ ${poly('0,414 478,315 900,399 900,428 480,343 0,443','#f7e6bf')}
+ ${poly('0,448 480,353 900,443 900,490 0,490','#8ec17f')}
+ ${[80,190,680,790].map(x=>tuft(x,455)).join('')}`;
 export function sceneSVG(location='suburbs',weather='Sunny'){
  const id=['suburbs','park','beach','station','downtown','mall'].includes(location)?location:'suburbs';
- const bg=id==='suburbs'?suburb():id==='park'?park():id==='beach'?beach():id==='station'?station():id==='downtown'?city():mall();
- return `<svg viewBox="0 0 900 490" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="sssky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${weather==='Rainy'?'#94c2c7':'#a5e6e8'}"/><stop offset="1" stop-color="#e0f6e7"/></linearGradient></defs><rect width="900" height="490" fill="url(#sssky)"/><circle cx="728" cy="83" r="52" fill="${weather==='Rainy'?'#dae3db':'#ffe587'}"/><circle cx="728" cy="83" r="66" fill="none" stroke="#ffeda8" stroke-width="6" opacity=".6"/>${cloud(156,90,.66)}${cloud(520,74,.46)}${bg}${commonGround(id)}${stand()}<g transform="translate(164 405)"><path d="M-52 0h106" stroke="#246d62" stroke-width="10" stroke-linecap="round"/><path d="M-43-7V-30H46V-7M-36 5v35M38 5v35" fill="none" stroke="#398c75" stroke-width="8"/></g><g transform="translate(731 405)"><path d="M-52 0h106" stroke="#246d62" stroke-width="10" stroke-linecap="round"/><path d="M-43-7V-30H46V-7M-36 5v35M38 5v35" fill="none" stroke="#398c75" stroke-width="8"/></g></svg>`;
+ const rainy=weather==='Rainy';
+ return `<svg viewBox="0 0 900 490" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" shape-rendering="crispEdges">
+ <rect width="900" height="490" fill="${rainy?'#a8ced4':'#91dbe7'}"/>
+ ${rect(0,232,900,258,rainy?'#91bc9e':'#8fcb83')}
+ ${rect(744,55,67,67,rainy?'#e2e4d5':'#ffde69')}
+ ${rect(759,43,37,12,rainy?'#e2e4d5':'#ffed9a')}
+ ${cloud(120,72)}${cloud(520,46)}
+ ${environment(id)}
+ ${pavement()}
+ ${tree(26,433,.6)}${tree(873,425,.55)}
+ ${stand()}
+ ${tuft(262,429)}${tuft(645,451)}${tuft(737,469)}
+ ${rainy?[130,290,470,640,790].map(x=>line(x,90,x-26,142,'#d7f4fb',3)).join(''):''}
+ </svg>`;
 }
