@@ -1,3 +1,9 @@
+## Vite PWA quick start
+
+Install Node.js 22+, then run `npm install` and `npm run dev` for local development. Build the production installable PWA with `npm run build` (output in `dist/`) and test it with `npm run preview`. `npm test` runs the gameplay tests. On GitHub Pages, select **Settings → Pages → Source: GitHub Actions**. The Pages workflow builds the app with `/Lemonade-Inc.-/` as its base path and deploys `dist/`.
+
+The Vite PWA plugin generates the web manifest and a Workbox service worker, precaches the built game assets for offline play, and updates installed clients on subsequent deployments. Game progress continues to be saved in your browser; exporting a save file remains available. Browser installation prompts appear only when eligible.
+
 # 🍋 Lemonade Inc. — Squeeze Street
 
 **Lemonade Inc.** is a lively, original browser game inspired by the *genre* of classic lemonade stand / tycoon simulations. Runs on desktop and mobile. Built from scratch in JavaScript and inline SVG with **no external dependencies, servers or third-party game assets**.
@@ -10,7 +16,7 @@ For the simplest offline experience, **double-click `play.html`**. All code and 
 python3 -m http.server 8000
 ```
 
-Open http://localhost:8000. Or run `npm run start` (Node 22+, fully offline). No build step required to run the modular version. Run `npm run build:standalone` after changing the source to regenerate `play.html`.
+Open http://localhost:8000. Or run `npm run dev` (Node 22+, fully offline). No build step required to run the modular version. Run `npm run build:standalone` after changing the source to regenerate `play.html`.
 
 ## Publish to GitHub Pages
 
