@@ -8,14 +8,13 @@
   <meta property="og:title" content="Lemonade Inc. — Squeeze Street">
   <meta property="og:description" content="How far can you grow your little lemonade stand? Play free in your browser.">
   <link rel="icon" type="image/svg+xml" href="./assets/icon.svg">
-  <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./style.css">
   <title>Lemonade Inc. — The Lemonade Business Game</title>
 </head>
 <body>
   <div class="app-shell" id="app">
     <header class="topbar">
-      <a class="brand" href="./" aria-label="Squeeze Street home">
+      <a class="brand" href="./" aria-label="Lemonade Inc. home">
         <img class="brand-logo" src="./assets/lemonade-inc-icon.webp" alt="Lemonade Inc. icon">
         <span class="brand-words"><small class="brand-company">THE LEMONADE BUSINESS GAME</small><strong>LEMONADE <em>INC.</em></strong><small>SQUEEZE STREET · YOUR EMPIRE</small></span>
       </a>
@@ -24,6 +23,7 @@
         <div class="metric"><span class="metric-icon">🥤</span><span><small>CUPS SOLD</small><b id="metric-sold">0</b></span></div>
         <div class="metric metric-cash"><span class="metric-icon">💰</span><span><small>YOUR CASH</small><b id="metric-cash">$40.00</b></span></div>
       </div>
+      <button id="install-app" type="button" class="icon-button" hidden aria-label="Install Lemonade Inc." title="Install Lemonade Inc.">⬇️</button>
       <button id="sound-toggle" class="icon-button" aria-label="Enable sound" title="Toggle game sounds">🔇</button>
     </header>
     <main class="main-grid">
