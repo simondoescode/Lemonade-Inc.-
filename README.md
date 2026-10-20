@@ -68,10 +68,17 @@ npm test
 
 The `assets/lemonade-inc-icon.webp` and `assets/lemonade-inc-logo.webp` graphics contain original Lemonade Inc. artwork. The icon is used in the top bar, and the lockup appears on the welcome panel. The game builds a standalone copy that embeds both graphics.
 
-## Game artwork and sprite animations
+## Scalable SVG artwork and animated characters
 
-The Suburbs uses a new original isometric neighbourhood asset at `assets/scenes/suburbs.webp`, inspired by classic lemonade-stand tycoon games, rather than the former flat SVG streets. The five other districts retain their individually generated isometric SVG scenes.
+All six game locations are rendered as original scalable SVG scenes. Suburbs uses
+the detailed isometric neighbourhood from `vector-art.mjs`: tiled pavements,
+diagonal streets, houses, hedges, trees, and a small yellow lemonade cart with
+blue-and-yellow umbrella. The other five locations remain SVG in `scene.mjs`.
 
-Customers and the lemonade vendor now use **actual transparent sprite art** from `assets/sprites/characters-atlas.png`, with the authoritative frame layout documented in `assets/sprites/characters-atlas.json`. The compact atlas contains 3 characters × 12 frames (4 idle, 4 walking, 4 interacting); each frame is 40 × 60 pixels and displayed using nearest-neighbour sampling. Walking passers-by traverse the scene; purchases pause the customer and animate both the customer and vendor serving lemonade. Motion is reduced when the operating system requests reduced motion.
-
-`npm run build` includes both image files in the GitHub Pages PWA. `npm run build:standalone` embeds both assets into `play.html` for offline single-file play.
+All customer and vendor figures are inline SVG assembled by
+`characterSVG(kind)`. The character drawings are vectors (not PNG or CSS sprite
+sheets) and animate individual arms, legs, head/body and drinks. Adults and
+children walk across the street; purchasing customers stop, receive a drink and
+continue walking, while the vendor gestures. Reduced-motion settings are
+respected. No sprite atlases or embedded suburb bitmaps are required for the PWA
+or the single-file offline build.

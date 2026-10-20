@@ -1,5 +1,6 @@
 import {VERSION,STORAGE_KEY,STOCK_ITEMS,BUNDLES,LOCATIONS,UPGRADES,STAFF,clamp,money,round,forecast,newGame,dailyCosts,changeRecipe,buyStock,chooseLocation,setAdvertising,setPrice,buyUpgrade,toggleStaff,recipeScore,costEstimate,startValidation,simulateDay,isValidSave,locationById} from './engine.mjs';
 import {sceneSVG} from './scene.mjs';
+import {suburbSVG,characterSVG} from './vector-art.mjs';
 
 const $=id=>document.getElementById(id);
 const htmlEscape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -74,16 +75,14 @@ function renderScene(){const report=phase==='report'?game.lastReport:null;const 
  $('scene-day').textContent='DAY '+String(report?.day||game.day).padStart(2,'0');
  const stage=$('scene-stage');
  stage.dataset.location=id;
- $('scene-art').innerHTML=id==='suburbs'
-   ? '<div class="scene-background scene-background--suburbs" aria-hidden="true"></div>'
-   : sceneSVG(id,weather);
- // The vendor is always visible; customer sprites are added during each selling day.
+ $('scene-art').innerHTML=id==='suburbs'?suburbSVG(weather):sceneSVG(id,weather);
+ // The vector vendor remains visible; SVG customers join during each selling day.
  const people=$('scene-people');
  if(!people.querySelector('.stand-vendor')){
    const vendor=document.createElement('span');
    vendor.className='stand-vendor';
    vendor.setAttribute('aria-hidden','true');
-   vendor.innerHTML='<span class="animated-sprite"></span>';
+   vendor.innerHTML=characterSVG('vendor');
    people.appendChild(vendor);
  }
  $('scene-status').textContent=phase==='running'?'BUSINESS IS BOOMING':phase==='report'?'DAY COMPLETE':'READY TO OPEN';
@@ -114,20 +113,20 @@ function challengeDialog(){const total=game.history.reduce((a,b)=>a+(Number(b.pr
 function newRun(mode){firstRun=false;if(simFrame)cancelAnimationFrame(simFrame);simFrame=0;sim=null;game=newGame(mode,Math.floor(Date.now()%2147483647));phase='planning';activeTab='recipe';mobileView='home';$('scene-people').innerHTML='';hideDialog();store();render();notify('New '+mode+' game. Make something delicious!');}
 function spawnVisitor(type){
  const parent=$('scene-people');
- if(parent.querySelectorAll('.sprite-customer').length>=7)
-   parent.querySelector('.sprite-customer')?.remove();
+ if(parent.querySelectorAll('.vector-customer').length>=7)
+   parent.querySelector('.vector-customer')?.remove();
  const customer=document.createElement('span');
  const character=Math.random()<.35?'child':'adult';
  const sold=type==='sold';
  const suburbs=$('scene-stage').dataset.location==='suburbs';
  const duration=4.6+Math.random()*.9;
- customer.className='sprite-customer'+(sold?' sale':'');
+ customer.className='vector-customer'+(sold?' sale':'');
  customer.setAttribute('aria-hidden','true');
- customer.style.setProperty('--sprite-offset',character==='child'?'-120px':'-60px');
- customer.style.setProperty('--visitor-y',(suburbs?26+Math.random()*6:13+Math.random()*8)+'%');
- customer.style.setProperty('--stop-x',suburbs?'34%':'49%');
+ 
+ customer.style.setProperty('--visitor-y',(suburbs?18+Math.random()*7:13+Math.random()*8)+'%');
+ customer.style.setProperty('--stop-x',suburbs?'49%':'49%');
  customer.style.setProperty('--walk-duration',duration+'s');
- customer.innerHTML='<span class="animated-sprite"></span>';
+ customer.innerHTML=characterSVG(character);
  parent.appendChild(customer);
  if(sold){
    setTimeout(()=>{
