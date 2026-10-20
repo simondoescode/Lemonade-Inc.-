@@ -177,12 +177,13 @@ body{overflow:hidden}
 
 
 /* Resolution-independent isometric vector actors. No bitmap sprite atlas. */
-.scene-art svg{image-rendering:auto!important;shape-rendering:geometricPrecision}
+.scene-art svg{image-rendering:pixelated!important;shape-rendering:crispEdges}
+.scene-art svg .pixel-roof,.scene-art svg .pixel-canopy,.scene-art svg .pixel-awning{shape-rendering:crispEdges}
 .scene-people{z-index:4}
 .stand-vendor,.vector-customer{position:absolute;width:43px;height:65px;pointer-events:none;z-index:5;filter:drop-shadow(0 2px 1px #163e3855)}
 .stand-vendor{left:48%;bottom:16%}
 .scene-stage[data-location="suburbs"] .stand-vendor{left:48%;bottom:26%}
-.svg-character{width:100%;height:100%;overflow:visible;display:block;image-rendering:auto;shape-rendering:geometricPrecision;
+.svg-character{width:100%;height:100%;overflow:visible;display:block;image-rendering:pixelated;shape-rendering:crispEdges;
  --skin:#e9b680;--hair:#654535;--shirt:#f06458;--pants:#3e84b9;--shoe:#524654}
 .svg-character--vendor{--shirt:#f4d65a;--pants:#347eb8;--hair:#6a4d39;--shoe:#4a4050}
 .svg-character--child{--shirt:#f28bbd;--pants:#687fc1;--hair:#7b4d3d;--shoe:#f2e6ed}
@@ -191,16 +192,16 @@ body{overflow:hidden}
 .svg-character--vendor .vector-hat,.svg-character--vendor .vector-apron{display:block}
 .svg-character--child .vector-bow,.svg-character--child .vector-ponytail{display:block}
 .vector-leg,.vector-arm,.vector-head,.vector-bounce,.vector-cup{transform-box:fill-box;transform-origin:center top}
-.stand-vendor .vector-bounce{animation:vector-idle 1.5s ease-in-out infinite}
-.vector-cup{opacity:0;transition:opacity .15s}
+.stand-vendor .vector-bounce{animation:vector-idle 1.2s steps(2,end) infinite}
+.vector-cup{opacity:0;transition:none}
 .stand-vendor.serving .vector-cup,.vector-customer.interacting .vector-cup{opacity:1}
-.stand-vendor.serving .vector-arm--back,.vector-customer.interacting .vector-arm--back{animation:vector-cheer .45s ease-in-out infinite alternate}
-.stand-vendor.serving .vector-bounce,.vector-customer.interacting .vector-bounce{animation:vector-idle .55s ease-in-out infinite}
+.stand-vendor.serving .vector-arm--back,.vector-customer.interacting .vector-arm--back{animation:vector-cheer .4s steps(2,end) infinite alternate}
+.stand-vendor.serving .vector-bounce,.vector-customer.interacting .vector-bounce{animation:vector-idle .55s steps(2,end) infinite}
 .vector-customer{left:-10%;bottom:var(--visitor-y,20%);animation:vector-walk-across var(--walk-duration,5s) linear forwards}
 .vector-customer.sale{animation-name:vector-sale-route}
-.vector-customer .vector-bounce{animation:vector-bob .34s ease-in-out infinite alternate}
-.vector-customer .vector-leg--front,.vector-customer .vector-arm--back{animation:vector-swing .44s ease-in-out infinite alternate}
-.vector-customer .vector-leg--back,.vector-customer .vector-arm--front{animation:vector-swing .44s ease-in-out infinite alternate-reverse}
+.vector-customer .vector-bounce{animation:vector-bob .4s steps(2,end) infinite alternate}
+.vector-customer .vector-leg--front,.vector-customer .vector-arm--back{animation:vector-swing .42s steps(2,end) infinite alternate}
+.vector-customer .vector-leg--back,.vector-customer .vector-arm--front{animation:vector-swing .42s steps(2,end) infinite alternate-reverse}
 .vector-customer.interacting .vector-leg,.vector-customer.interacting .vector-arm--front{animation:none}
 .vector-customer.interacting:after{content:"+ $";position:absolute;top:-18px;left:16px;white-space:nowrap;color:#118953;font-weight:900;font-size:14px;text-shadow:1px 1px #fff8de;animation:rise .9s ease-out forwards}
 @keyframes vector-bob{from{transform:translateY(0)}to{transform:translateY(-3px)}}
@@ -214,3 +215,9 @@ body{overflow:hidden}
  .stand-vendor .vector-bounce,.vector-customer,.vector-customer .vector-bounce,.vector-customer .vector-leg,.vector-customer .vector-arm{animation:none!important}
  .vector-customer{left:var(--stop-x,49%)}
 }
+
+/* Keep pixel geometry deliberate even on retina screens: scale vectors,
+   never downsample a low-resolution bitmap. */
+.scene-art svg,.svg-character{shape-rendering:crispEdges!important}
+.vector-customer .vector-head{transform-origin:center bottom}
+.scene-stage[data-location="suburbs"]{background:#39c66d}

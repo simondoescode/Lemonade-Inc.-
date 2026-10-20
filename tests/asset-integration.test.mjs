@@ -43,3 +43,18 @@ test('game and standalone builder use SVG instead of raster sprite sheets',()=>{
  assert.match(builder,/read\('vector-art\.mjs'\)/);
  assert.doesNotMatch(builder,/spriteImage|sceneImage/);
 });
+
+test('pixel-art charm is preserved with stepped SVG geometry and timed pose changes',()=>{
+ const art=read('vector-art.mjs');
+ const css=read('style.css');
+ const scene=suburbSVG('Sunny');
+ assert.match(art,/shape-rendering="crispEdges"/);
+ assert.match(scene,/pixel-roof/);
+ assert.match(scene,/pixel-canopy/);
+ assert.match(scene,/pixel-awning/);
+ assert.doesNotMatch(scene,/background-image|data:image/);
+ for(const kind of ['vendor','adult','child'])
+   assert.match(characterSVG(kind),/shape-rendering="crispEdges"/);
+ assert.match(css,/vector-swing \.42s steps\(2,end\)/);
+ assert.match(css,/vector-bob \.4s steps\(2,end\)/);
+});
