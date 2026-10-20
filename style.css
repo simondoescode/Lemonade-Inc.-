@@ -69,3 +69,108 @@ body{background:repeating-linear-gradient(0deg,transparent 0 38px,#ffffff12 38px
 .welcome-card{border-radius:10px;border-color:#906576;background:linear-gradient(135deg,#ffdc6a,#ffb65e);box-shadow:0 5px 0 #885969}
 .forecast-card{background:#d4f1d7}
 @media(max-width:830px){.mobile-bottom-nav{background:#fff0c8;border-top:3px solid #88677b;box-shadow:0 -5px 0 #624c5b25}.mobile-bottom-nav button{border-radius:7px}.mobile-bottom-nav button[aria-current="page"]{background:#297e68;box-shadow:0 3px 0 #375c60}}
+
+/* Viewport-first layout: avoid document scrolling; scroll only long game panels. */
+html,body{min-height:100%;height:100%}
+body{overflow:hidden}
+.app-shell{width:100%;max-width:1600px;height:100vh;height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:8px 14px 7px}
+.topbar{min-height:0;flex:0 0 auto;padding:2px 0 8px;gap:10px}
+.brand{gap:8px;min-width:0}
+.brand-logo{width:48px;height:48px;padding:3px;border-radius:8px;flex-shrink:0}
+.brand-words strong{font-size:clamp(18px,1.8vw,25px);letter-spacing:-1px}
+.brand-words .brand-company{font-size:8px;letter-spacing:1px;margin:0 0 3px}
+.brand-words small{font-size:8px;letter-spacing:1px;margin-top:2px}
+.top-metrics{gap:7px}
+.metric{min-width:93px;padding:5px 8px;gap:6px}
+.metric-cash{min-width:117px}
+.metric-icon{font-size:18px}
+.metric small{font-size:9px;letter-spacing:.2px}
+.metric b{font-size:17px}
+.icon-button{width:38px;height:38px;font-size:18px;border-radius:7px}
+.main-grid{flex:1 1 0;min-height:0;overflow:hidden;gap:12px;align-items:stretch}
+.left-column,.right-column{min-height:0;overflow:hidden;gap:10px}
+.welcome-card{flex:0 0 auto;min-height:0;padding:11px 17px}
+.welcome-card h1{font-size:clamp(23px,2vw,31px)}
+.welcome-card .eyebrow,.welcome-card p:last-of-type,.welcome-brand span{display:none}
+.welcome-brand{margin-top:5px}
+.welcome-brand img{width:78px;max-height:42px}
+.mascot-illustration{font-size:58px}
+.tabs{flex:0 0 auto;padding:2px 0 5px}
+.tab{min-height:49px;min-width:60px;padding:5px 8px}
+.tab span{font-size:19px}
+.panel-card{flex:1 1 0;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:15px}
+.forecast-card{flex:0 0 auto;min-height:0;padding:9px 13px;gap:12px}
+.forecast-symbol{font-size:35px}
+.forecast-main strong{font-size:24px}
+.forecast-news strong{margin:2px 0}
+.scene-card{flex:1 1 0;min-height:0;display:flex;flex-direction:column}
+.scene-head{flex:0 0 auto;padding:8px 13px 6px}
+.scene-head h2{font-size:20px}
+.scene-stage{flex:1 1 0;min-height:115px;aspect-ratio:auto}
+.scene-stats{flex:0 0 auto}
+.scene-stats>div{padding:6px 4px}
+.scene-stats b{font-size:18px}
+.scene-action{flex:0 0 auto;padding:9px}
+.primary-button{min-height:42px;font-size:13px}
+.scene-action>p{margin-top:4px}
+.bottom-grid{flex:0 0 auto;gap:9px}
+.mini-card{min-height:0;padding:9px 12px}
+.mini-card h3{margin-bottom:5px}
+.inventory-grid>div{padding:3px 6px}
+.footer{flex:0 0 auto;padding:5px 2px;font-size:9px}
+.footer-link{font-size:10px}
+@media(max-height:740px) and (min-width:831px){
+ .welcome-card{display:none}
+ .scene-action>p{display:none}
+ .bottom-grid{display:none}
+}
+@media(max-width:830px){
+ body{--mobile-nav-height:69px}
+ .app-shell{height:100dvh;padding:6px 9px calc(69px + env(safe-area-inset-bottom,0px));overflow:hidden}
+ .topbar{padding:0 0 6px;gap:6px}
+ .brand-logo{width:39px;height:39px}
+ .brand-words strong{font-size:19px}
+ .brand-words .brand-company{font-size:7px}
+ .brand-words small:last-child{display:none}
+ .top-metrics{order:3;width:100%;gap:5px}
+ .metric{min-width:0;flex:1;padding:5px 7px}
+ .metric-cash{min-width:0}
+ .metric-icon{font-size:16px}
+ .metric b{font-size:15px}
+ .metric small{font-size:8px}
+ .icon-button{width:36px;height:36px;font-size:17px}
+ .main-grid{display:block;flex:1 1 0;min-height:0;overflow:hidden}
+ .left-column,.right-column{height:100%;min-height:0;gap:8px}
+ .right-column{grid-row:auto}
+ .left-column{grid-row:auto}
+ .footer{display:none}
+ .panel-card{flex:1 1 0;min-height:0;padding:12px;overflow-y:auto}
+ .forecast-card{padding:7px 10px;gap:8px}
+ .forecast-symbol{font-size:29px}
+ .forecast-main strong{font-size:22px}
+ .forecast-card{grid-template-columns:minmax(115px,35%) 1fr}
+ .forecast-news p{font-size:10px}
+ .scene-head{padding:7px 11px 5px}
+ .scene-head h2{font-size:18px}
+ .scene-stage{min-height:100px}
+ .scene-stats>div{padding:5px 2px}
+ .scene-stats b{font-size:16px}
+ .scene-action{padding:7px}
+ .primary-button{min-height:42px;font-size:13px}
+ .scene-action>p{display:none}
+ .bottom-grid{gap:7px}
+ .mini-card{padding:6px 9px}
+ .mini-card h3{font-size:11px;margin-bottom:4px}
+ .tip-copy{font-size:10px;line-height:1.3}
+ .mobile-bottom-nav{padding-top:5px;padding-bottom:calc(5px + env(safe-area-inset-bottom,0px))}
+ .mobile-bottom-nav button{min-height:48px}
+ body[data-mobile-view="business"] .tabs{flex:0 0 auto;gap:4px;padding:0}
+ body[data-mobile-view="business"] .tabs .tab{min-height:47px}
+}
+@media(max-height:650px) and (max-width:830px){
+ .forecast-news p,.news-badge,.bottom-grid{display:none}
+ .forecast-card{min-height:0;padding:5px 9px}
+ .forecast-symbol{font-size:23px}
+ .scene-stage{min-height:80px}
+ .scene-stats small{font-size:8px}
+}
