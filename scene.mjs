@@ -47,7 +47,7 @@ const stand=()=>`<g shape-rendering="crispEdges">
  ${rect(519,326,20,23,'#f7d04a')}${rect(522,320,12,7,'#fff6be')}
  ${rect(445,388,38,12,'#f3e9ac')}${rect(452,394,22,10,'#ba8648')}
  ${rect(590,343,30,30,'#e4a651')}${rect(595,348,20,10,'#f5dd7a')}
- ${person(341,390,'#f15d69',.88)}
+ 
  </g>`;
 /* Elevated neighbourhood tiles: lawns, diagonal asphalt roads, kerbs and pavements. */
 const hedge=(x,y,w=65)=>`${iso(x,y,w,12,17,'#218b4d','#155c39','#39b95b')}${Array.from({length:Math.floor(w/16)},(_,i)=>rect(x+5+i*16,y-18,8,3,'#66d475')).join('')}`;

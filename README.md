@@ -67,3 +67,11 @@ npm test
 ## Branding
 
 The `assets/lemonade-inc-icon.webp` and `assets/lemonade-inc-logo.webp` graphics contain original Lemonade Inc. artwork. The icon is used in the top bar, and the lockup appears on the welcome panel. The game builds a standalone copy that embeds both graphics.
+
+## Game artwork and sprite animations
+
+The Suburbs uses a new original isometric neighbourhood asset at `assets/scenes/suburbs.webp`, inspired by classic lemonade-stand tycoon games, rather than the former flat SVG streets. The five other districts retain their individually generated isometric SVG scenes.
+
+Customers and the lemonade vendor now use **actual transparent sprite art** from `assets/sprites/characters-atlas.png`, with the authoritative frame layout documented in `assets/sprites/characters-atlas.json`. The compact atlas contains 3 characters × 12 frames (4 idle, 4 walking, 4 interacting); each frame is 40 × 60 pixels and displayed using nearest-neighbour sampling. Walking passers-by traverse the scene; purchases pause the customer and animate both the customer and vendor serving lemonade. Motion is reduced when the operating system requests reduced motion.
+
+`npm run build` includes both image files in the GitHub Pages PWA. `npm run build:standalone` embeds both assets into `play.html` for offline single-file play.
