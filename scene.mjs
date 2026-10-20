@@ -49,20 +49,49 @@ const stand=()=>`<g shape-rendering="crispEdges">
  ${rect(590,343,30,30,'#e4a651')}${rect(595,348,20,10,'#f5dd7a')}
  ${person(341,390,'#f15d69',.88)}
  </g>`;
+/* Elevated neighbourhood tiles: lawns, diagonal asphalt roads, kerbs and pavements. */
+const hedge=(x,y,w=65)=>`${iso(x,y,w,12,17,'#218b4d','#155c39','#39b95b')}${Array.from({length:Math.floor(w/16)},(_,i)=>rect(x+5+i*16,y-18,8,3,'#66d475')).join('')}`;
+const flowers=(x,y)=>[0,13,26,38].map((v,i)=>`${rect(x+v,y-5-(i%2)*4,7,7,i%2?'#ffe8a2':'#ff91ac')}${rect(x+v+2,y-3-(i%2)*4,3,3,'#fff8d3')}`).join('');
+const sidewalk=(shift=0)=>`${poly('0,110 900,388 900,463 0,187','#c9cbd0')}${poly('0,109 900,387 900,404 0,126','#f1f0e8')}${Array.from({length:13},(_,i)=>line(i*93-280+shift,12,i*93+55+shift,237,'#b9b8b6',1.5)).join('')}`;
+const roads=()=>`
+ ${poly('0,128 900,403 900,490 0,226','#484750')}
+ ${poly('0,112 900,389 900,407 0,130','#f0eeea')}
+ ${poly('0,128 900,405 900,415 0,140','#9fa0a3')}
+ ${poly('0,225 900,490 900,465 0,203','#f0eeea')}
+ ${poly('0,209 900,470 900,480 0,220','#a8a8aa')}
+ ${Array.from({length:9},(_,i)=>{const x=i*126-150;return line(x,211+x*.298,x+55,227+(x+55)*.298,'#99979b',3)}).join('')}
+ ${poly('0,357 470,202 552,230 0,415','#ece9e5')}
+ ${poly('0,367 470,211 544,235 0,429','#a7a6a6')}
+ ${Array.from({length:8},(_,i)=>line(i*88-165,414-i*25,i*88-155,423-i*25,'#b8b8ba',1.2)).join('')}
+ `;
+const mailbox=(x,y)=>`${rect(x,y-34,5,34,'#6c4b43')}${rect(x-8,y-43,27,12,'#fff6ea','stroke="#514b54" stroke-width="3"')}${rect(x+12,y-48,5,9,'#ed5f61')}`;
+const neighbourhood=()=>`${rect(0,0,900,490,'#30b866')}
+ ${[0,1,2,3,4].map(i=>tuft(i*155+20,65)).join('')}
+ ${building(20,180,170,57,134,'#b77d9b','#e6c9bf')}
+ ${building(625,182,178,57,136,'#d9a75d','#6bcdbd')}
+ ${hedge(240,164,114)}${hedge(743,231,126)}
+ ${tree(404,149,.66)}${tree(852,206,.74)}
+ ${roads()}
+ ${rect(10,342,345,148,'#31bd64')}
+ ${poly('0,350 392,231 453,249 0,413','#f0efed')}
+ ${poly('0,361 392,242 441,258 0,427','#b4b4b2')}
+ ${building(-49,413,186,70,184,'#c28aa6','#ddcbc2')}
+ ${building(739,477,198,74,178,'#e4ce7a','#99d9de')}
+ ${hedge(183,364,95)}${hedge(734,443,111)}
+ ${tree(187,391,.62)}${tree(651,474,.72)}
+ ${flowers(75,391)}${flowers(782,442)}
+ ${mailbox(361,277)}
+ `;
+const plaza=()=>`${rect(0,0,900,490,'#8acb85')}${poly('0,247 900,180 900,490 0,490','#b5b6b2')}${poly('0,290 900,223 900,288 0,351','#ededdf')}${[70,260,460,690].map(x=>line(x,294,x+20,349,'#c3c2b7',2)).join('')}${shop(35,272,'MARKET','#ffcf92')}${shop(695,268,'STORES','#d3a7c2')}${tree(303,272,.77)}${tree(614,298,.75)}${hedge(300,325,105)}`;
 const environment=(id)=>{
- if(id==='suburbs')return `${building(68,292,160,56,128,'#ffc78b')}${building(676,278,146,58,116,'#f8da9d','#e76d6d')}${tree(272,300,.65)}${tree(850,302,.7)}`;
- if(id==='park')return `${tree(115,314,1.12)}${tree(775,288,1.15)}${tree(280,255,.62)}${rect(635,299,120,20,'#80cfb6')}${rect(650,306,85,10,'#b3eddd')}`;
- if(id==='beach')return `${poly('0,230 900,180 900,490 0,490','#f3d782')}${poly('0,188 900,145 900,211 0,260','#5cc9d0')}${poly('0,248 900,199 900,214 0,262','#fff2ce')}${tree(130,320,.83)}${tree(800,296,.68)}`;
- if(id==='station')return `${shop(55,304,'STATION','#e5cb92')}${iso(676,300,158,48,140,'#c3bec2','#8d9ca2','#f2d59c')}${rect(708,180,96,29,'#f7e4a4')}<text x="756" y="200" font-family="monospace" font-size="17" font-weight="900" text-anchor="middle" fill="#65545d">TRAIN</text>`;
- if(id==='downtown')return `${[0,1,2,3,4,5].map((i)=>iso(i*160-22,306,115,39,155+(i%3)*45,['#6facbc','#e5ae83','#8cc3a1'][i%3],'#678b9f','#d6d8bd')).join('')}${shop(690,322,'CAFE','#f6b87c')}`;
- return `${shop(52,300,'PLAZA','#ffc09a')}${shop(684,310,'SHOPS','#f1d397')}${tree(280,291,.65)}`;
+ if(id==='suburbs')return neighbourhood();
+ if(id==='park')return `${rect(0,0,900,490,'#5dbf6f')}${poly('0,260 900,135 900,490 0,490','#63be63')}${poly('0,370 900,212 900,276 0,438','#efdfba')}${[70,225,725,850].map((x,i)=>tree(x,260+(i%2)*90,.6+i*.08)).join('')}${hedge(350,330,160)}${flowers(235,360)}`;
+ if(id==='beach')return `${rect(0,0,900,490,'#65cad8')}${poly('0,150 900,120 900,490 0,490','#f1d48e')}${poly('0,105 900,75 900,185 0,230','#40b8ca')}${poly('0,223 900,177 900,197 0,246','#fff3d9')}${shop(40,287,'ICE CREAM','#f6bd9e')}${tree(795,317,.64)}`;
+ if(id==='station')return `${plaza()}${shop(342,217,'STATION','#a9ced0')}`;
+ if(id==='downtown')return `${rect(0,0,900,490,'#a5bdaf')}${[0,1,2,3,4,5].map((i)=>iso(i*160-22,292,115,39,155+(i%3)*45,['#6facbc','#e5ae83','#8cc3a1'][i%3],'#678b9f','#d6d8bd')).join('')}${plaza()}`;
+ return plaza();
 };
-const pavement=()=>`${poly('0,317 472,219 900,315 900,490 0,490','#aed18e')}
- ${poly('0,365 470,262 900,350 900,456 480,361 0,474','#e3cba4')}
- ${poly('0,393 475,293 900,379 900,403 480,318 0,421','#c79e79')}
- ${poly('0,414 478,315 900,399 900,428 480,343 0,443','#f7e6bf')}
- ${poly('0,448 480,353 900,443 900,490 0,490','#8ec17f')}
- ${[80,190,680,790].map(x=>tuft(x,455)).join('')}`;
+const pavement=()=>`${poly('0,475 490,326 900,442 900,490','#57b964')}${poly('0,458 490,314 900,422 900,442 490,335 0,480','#f1ece1')}${[96,254,625,754].map(x=>tuft(x,470)).join('')}`;
 export function sceneSVG(location='suburbs',weather='Sunny'){
  const id=['suburbs','park','beach','station','downtown','mall'].includes(location)?location:'suburbs';
  const rainy=weather==='Rainy';
