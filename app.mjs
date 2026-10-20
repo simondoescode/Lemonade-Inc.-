@@ -99,7 +99,18 @@ function reportDialog(){const r=game.lastReport,positive=r.profit>=0;showDialog(
 <div class="dialog-actions"><button class="secondary-button" data-action="report-stats">View stats</button><button class="primary-button" data-action="continue-day">${game.finished?'VIEW CHALLENGE RESULTS':'NEXT DAY ➜'}</button></div>`);}
 function challengeDialog(){const total=game.history.reduce((a,b)=>a+(Number(b.profit)||0),0);const last=game.history.at(-1);showDialog(`<div class="dialog-art">🏅</div><p class="eyebrow">30-DAY CHALLENGE COMPLETE</p><h2>What a squeeze!</h2><p>You've finished a whole month of running your own lemonade empire.</p><div class="dialog-grid"><div class="dialog-stat"><small>CUPS SOLD</small><b>${game.totalSold}</b></div><div class="dialog-stat"><small>TOTAL REVENUE</small><b>${money(game.totalRevenue)}</b></div><div class="dialog-stat"><small>TOTAL OPERATING PROFIT</small><b>${money(total)}</b></div><div class="dialog-stat"><small>FINAL CASH</small><b>${money(last?.bank||game.cash)}</b></div></div><div class="dialog-actions"><button class="secondary-button" data-action="report-stats">See charts</button><button class="primary-button" data-action="new-game">PLAY AGAIN ➜</button></div>`);}
 function newRun(mode){firstRun=false;if(simFrame)cancelAnimationFrame(simFrame);simFrame=0;sim=null;game=newGame(mode,Math.floor(Date.now()%2147483647));phase='planning';activeTab='recipe';mobileView='home';$('scene-people').innerHTML='';hideDialog();store();render();notify('New '+mode+' game. Make something delicious!');}
-function spawnVisitor(type){const parent=$('scene-people');if(parent.childElementCount>7)parent.firstElementChild?.remove();const walker=document.createElement('span');walker.className='walker'+(type==='sold'?' sale':'');walker.textContent=['🚶','🚶‍♀️','🧑','👩','🧑‍🦱','👨‍🦰'][Math.floor(Math.random()*6)];walker.style.bottom=(19+Math.random()*15)+'%';parent.appendChild(walker);setTimeout(()=>walker.remove(),3400);}
+function spawnVisitor(type){
+ const parent=$('scene-people');
+ if(parent.childElementCount>=7)parent.firstElementChild?.remove();
+ const walker=document.createElement('span');
+ const variant=Math.floor(Math.random()*3);
+ walker.className='walker pixel-visitor visitor-'+variant+(type==='sold'?' sale':'');
+ walker.style.setProperty('--visitor-y',(19+Math.random()*13)+'%');
+ walker.style.setProperty('--walk-duration',(3.2+Math.random()*1.2)+'s');
+ walker.innerHTML='<span class="pixel-person"><i class="person-hair"></i><i class="person-face"></i><i class="person-body"></i><i class="person-arm left"></i><i class="person-arm right"></i><i class="person-leg left"></i><i class="person-leg right"></i><i class="person-cup"></i></span>';
+ parent.appendChild(walker);
+ walker.addEventListener('animationend',event=>{if(event.target===walker)walker.remove()},{once:true});
+}
 function flashSale(){const el=$('scene-toast');el.textContent='🥤 SOLD! +'+money(game.price);el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),600);}
 function updateLive(){const s=sim;if(!s)return;$('live-visitors').textContent=liveVisitors;$('live-sold').textContent=liveSold;$('live-revenue').textContent=money(liveSold*game.price);$('live-satisfaction').textContent=s.report.quality+'%';}
 function frame(t){if(phase!=='running'||!sim)return;const progress=clamp((t-runStart)/12500,0,1);const count=Math.floor(sim.timeline.length*progress);while(runCount<count){const ev=sim.timeline[runCount++];liveVisitors++;if(ev.type==='sold'){liveSold++;if(runCount%5===0){flashSale();beep('sale');}}else if(ev.type!=='pass'){liveWalked++;}if(runCount%3===0||ev.type==='sold'&&runCount%4===0)spawnVisitor(ev.type);}updateLive();if(progress<1)simFrame=requestAnimationFrame(frame);else finishDay();}
