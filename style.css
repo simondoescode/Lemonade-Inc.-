@@ -174,3 +174,33 @@ body{overflow:hidden}
  .scene-stage{min-height:80px}
  .scene-stats small{font-size:8px}
 }
+
+/* Animated original pixel customers — CSS sprite construction, no emoji glyphs. */
+.pixel-visitor{position:absolute;left:-8%;bottom:var(--visitor-y,24%);width:34px;height:62px;z-index:4;pointer-events:none;filter:drop-shadow(1px 3px 0 #3d454766);animation:pixel-visitor-cross var(--walk-duration,3.5s) linear forwards}
+.pixel-person{display:block;position:absolute;bottom:0;left:2px;width:32px;height:60px;image-rendering:pixelated;animation:pixel-bob .38s steps(2,end) infinite;--shirt:#e65e5b;--pants:#377bb4;--hair:#67432e;--skin:#f4bd82}
+.pixel-person i{display:block;position:absolute;box-sizing:border-box;border:2px solid #483c42;border-radius:0}
+.person-hair{z-index:4;left:6px;top:1px;width:22px;height:15px;background:var(--hair)}
+.person-face{z-index:5;left:9px;top:12px;width:19px;height:15px;background:var(--skin);box-shadow:inset -4px -3px #d99d74}
+.person-face:after{content:"";position:absolute;width:3px;height:4px;right:3px;top:5px;background:#3e333b}
+.person-body{z-index:3;left:7px;top:28px;width:22px;height:19px;background:var(--shirt);box-shadow:inset -5px -3px #a94655}
+.person-arm{z-index:2;top:30px;width:7px;height:20px;background:var(--skin);transform-origin:50% 15%}
+.person-arm.left{left:3px;animation:pixel-arm .38s steps(2,end) infinite}
+.person-arm.right{right:0;animation:pixel-arm .38s steps(2,end) infinite reverse}
+.person-leg{z-index:1;top:44px;width:10px;height:16px;background:var(--pants);transform-origin:50% 0}
+.person-leg.left{left:7px;animation:pixel-step .38s steps(2,end) infinite}
+.person-leg.right{right:3px;animation:pixel-step .38s steps(2,end) infinite reverse}
+.person-cup{display:none;z-index:6;top:30px;right:-7px;width:10px;height:13px;background:#ffdc65;border-color:#fff6df}
+.visitor-1 .pixel-person{--shirt:#f29cc5;--pants:#5966a3;--hair:#865335}
+.visitor-1 .person-hair{height:19px;left:4px}
+.visitor-2 .pixel-person{--shirt:#4cb3a5;--pants:#b28d5c;--hair:#433344;--skin:#dca071}
+.pixel-visitor.sale .person-cup{display:block;animation:pixel-cheer .6s steps(2,end) infinite}
+.pixel-visitor.sale .person-arm.right{animation:pixel-wave .5s steps(2,end) infinite}
+.pixel-visitor.sale:after{content:"+ $";position:absolute;left:10px;top:-15px;font-size:14px;font-weight:1000;color:#117f52;text-shadow:1px 2px #fff1b8;animation:rise .9s ease-out forwards}
+@keyframes pixel-visitor-cross{0%{left:-8%}42%{left:42%}58%{left:49%}100%{left:110%}}
+@keyframes pixel-step{0%,100%{transform:rotate(21deg)}50%{transform:rotate(-24deg)}}
+@keyframes pixel-arm{0%,100%{transform:rotate(-16deg)}50%{transform:rotate(19deg)}}
+@keyframes pixel-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes pixel-wave{0%,100%{transform:rotate(-25deg)}50%{transform:rotate(-95deg)}}
+@keyframes pixel-cheer{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@media(max-width:500px){.pixel-visitor{transform:scale(.75);transform-origin:bottom center}}
+@media(prefers-reduced-motion:reduce){.pixel-visitor{left:48%;animation:none}.pixel-person,.pixel-person i{animation:none!important}}
