@@ -1,6 +1,6 @@
 import {VERSION,STORAGE_KEY,STOCK_ITEMS,BUNDLES,LOCATIONS,UPGRADES,STAFF,clamp,money,round,forecast,newGame,dailyCosts,changeRecipe,buyStock,chooseLocation,setAdvertising,setPrice,buyUpgrade,toggleStaff,recipeScore,costEstimate,startValidation,simulateDay,isValidSave,locationById} from './engine.mjs';
 import {sceneSVG} from './scene.mjs';
-import {suburbSVG,characterSVG} from './vector-art.mjs';
+
 
 const $=id=>document.getElementById(id);
 const htmlEscape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -75,14 +75,16 @@ function renderScene(){const report=phase==='report'?game.lastReport:null;const 
  $('scene-day').textContent='DAY '+String(report?.day||game.day).padStart(2,'0');
  const stage=$('scene-stage');
  stage.dataset.location=id;
- $('scene-art').innerHTML=id==='suburbs'?suburbSVG(weather):sceneSVG(id,weather);
- // The vector vendor remains visible; SVG customers join during each selling day.
+ $('scene-art').innerHTML=id==='suburbs'
+   ? '<div class="hd-neighbourhood" aria-hidden="true"></div>'
+   : sceneSVG(id,weather);
+ // HD character sprites animate above the scenic background.
  const people=$('scene-people');
  if(!people.querySelector('.stand-vendor')){
    const vendor=document.createElement('span');
    vendor.className='stand-vendor';
    vendor.setAttribute('aria-hidden','true');
-   vendor.innerHTML=characterSVG('vendor');
+   vendor.innerHTML='<span class="hd-sprite hd-sprite--vendor" aria-hidden="true"></span>';
    people.appendChild(vendor);
  }
  $('scene-status').textContent=phase==='running'?'BUSINESS IS BOOMING':phase==='report'?'DAY COMPLETE':'READY TO OPEN';
@@ -113,20 +115,18 @@ function challengeDialog(){const total=game.history.reduce((a,b)=>a+(Number(b.pr
 function newRun(mode){firstRun=false;if(simFrame)cancelAnimationFrame(simFrame);simFrame=0;sim=null;game=newGame(mode,Math.floor(Date.now()%2147483647));phase='planning';activeTab='recipe';mobileView='home';$('scene-people').innerHTML='';hideDialog();store();render();notify('New '+mode+' game. Make something delicious!');}
 function spawnVisitor(type){
  const parent=$('scene-people');
- if(parent.querySelectorAll('.vector-customer').length>=7)
-   parent.querySelector('.vector-customer')?.remove();
+ if(parent.querySelectorAll('.hd-customer').length>=7)parent.querySelector('.hd-customer')?.remove();
  const customer=document.createElement('span');
- const character=Math.random()<.35?'child':'adult';
+ const character=Math.random()<.38?'child':'adult';
  const sold=type==='sold';
  const suburbs=$('scene-stage').dataset.location==='suburbs';
  const duration=4.6+Math.random()*.9;
- customer.className='vector-customer'+(sold?' sale':'');
+ customer.className='hd-customer'+(sold?' sale':'');
  customer.setAttribute('aria-hidden','true');
- 
- customer.style.setProperty('--visitor-y',(suburbs?18+Math.random()*7:13+Math.random()*8)+'%');
- customer.style.setProperty('--stop-x',suburbs?'49%':'49%');
+ customer.style.setProperty('--visitor-y',(suburbs?21+Math.random()*9:13+Math.random()*8)+'%');
+ customer.style.setProperty('--stop-x',suburbs?'31%':'49%');
  customer.style.setProperty('--walk-duration',duration+'s');
- customer.innerHTML=characterSVG(character);
+ customer.innerHTML='<span class="hd-sprite hd-sprite--'+character+'"></span>';
  parent.appendChild(customer);
  if(sold){
    setTimeout(()=>{
@@ -135,6 +135,7 @@ function spawnVisitor(type){
      const vendor=parent.querySelector('.stand-vendor');
      vendor?.classList.add('serving');
      setTimeout(()=>{
+       if(!customer.isConnected)return;
        customer.classList.remove('interacting');
        vendor?.classList.remove('serving');
      },duration*230);
@@ -142,7 +143,7 @@ function spawnVisitor(type){
  }
  customer.addEventListener('animationend',event=>{
    if(event.target===customer)customer.remove();
- });
+ },{once:true});
 }
 function flashSale(){const el=$('scene-toast');el.textContent='🥤 SOLD! +'+money(game.price);el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),600);}
 function updateLive(){const s=sim;if(!s)return;$('live-visitors').textContent=liveVisitors;$('live-sold').textContent=liveSold;$('live-revenue').textContent=money(liveSold*game.price);$('live-satisfaction').textContent=s.report.quality+'%';}

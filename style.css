@@ -221,3 +221,33 @@ body{overflow:hidden}
 .scene-art svg,.svg-character{shape-rendering:crispEdges!important}
 .vector-customer .vector-head{transform-origin:center bottom}
 .scene-stage[data-location="suburbs"]{background:#39c66d}
+
+
+/* High-definition illustrated suburb and production 4×3 character sheets.
+   Each 320×360 source frame is displayed at natural game scale with browser
+   downsampling. This is NOT a low-resolution sheet stretched up to fill space. */
+.hd-neighbourhood{position:absolute;inset:0;background-image:url('./assets/hd/suburbs.webp');background-position:center center;background-size:cover;background-repeat:no-repeat}
+.scene-stage[data-location="suburbs"]{background:#4abe6b}
+.scene-stage[data-location="suburbs"] .stand-vendor{left:28%;bottom:35%}
+.stand-vendor,.hd-customer{position:absolute;width:64px;height:72px;pointer-events:none;z-index:5;filter:drop-shadow(0 2px 1px #203e3766)}
+.stand-vendor{left:49%;bottom:18%}
+.hd-sprite{display:block;width:100%;height:100%;background-repeat:no-repeat;background-size:400% 300%;background-position:0% 0%;image-rendering:auto;animation:hd-idle 1.1s steps(4,end) infinite}
+.hd-sprite--vendor{background-image:url('./assets/hd/vendor.webp')}
+.hd-sprite--adult{background-image:url('./assets/hd/adult.webp')}
+.hd-sprite--child{background-image:url('./assets/hd/child.webp')}
+.hd-customer{left:-12%;bottom:var(--visitor-y,23%);animation:hd-walk-route var(--walk-duration,5s) linear forwards}
+.hd-customer.sale{animation-name:hd-sale-route}
+.hd-customer .hd-sprite{background-position-y:50%;animation:hd-walk .6s steps(4,end) infinite}
+.hd-customer.interacting .hd-sprite,.stand-vendor.serving .hd-sprite{background-position-y:100%;animation:hd-interact 1s steps(4,end) infinite}
+.hd-customer.interacting:after{content:"+ $";position:absolute;left:20px;top:-20px;font-size:14px;font-weight:900;color:#138e5c;text-shadow:1px 2px #fff0b2;animation:rise .8s ease-out forwards}
+@keyframes hd-idle{from{background-position-x:0%}to{background-position-x:133.333%}}
+@keyframes hd-walk{from{background-position-x:0%}to{background-position-x:133.333%}}
+@keyframes hd-interact{from{background-position-x:0%}to{background-position-x:133.333%}}
+@keyframes hd-walk-route{from{left:-12%}to{left:110%}}
+@keyframes hd-sale-route{0%{left:-12%}42%,65%{left:var(--stop-x,31%)}100%{left:110%}}
+@media(max-width:500px){.stand-vendor,.hd-customer{width:50px;height:56px}.hd-neighbourhood{background-position:36% center}}
+@media(prefers-reduced-motion:reduce){
+ .stand-vendor .hd-sprite,.hd-customer,.hd-customer .hd-sprite{animation:none!important}
+ .hd-customer{left:var(--stop-x,31%)}
+ .stand-vendor.serving .hd-sprite,.hd-customer.interacting .hd-sprite{background-position-x:0%;background-position-y:100%}
+}

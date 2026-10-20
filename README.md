@@ -68,17 +68,9 @@ npm test
 
 The `assets/lemonade-inc-icon.webp` and `assets/lemonade-inc-logo.webp` graphics contain original Lemonade Inc. artwork. The icon is used in the top bar, and the lockup appears on the welcome panel. The game builds a standalone copy that embeds both graphics.
 
-## Scalable SVG artwork and animated characters
 
-All six game locations are rendered as original scalable SVG scenes. Suburbs uses
-the detailed isometric neighbourhood from `vector-art.mjs`: tiled pavements,
-diagonal streets, houses, hedges, trees, and a small yellow lemonade cart with
-blue-and-yellow umbrella. The other five locations remain SVG in `scene.mjs`.
+## HD pixel-art game assets
 
-All customer and vendor figures are inline SVG assembled by
-`characterSVG(kind)`. The character drawings are vectors (not PNG or CSS sprite
-sheets) and animate individual arms, legs, head/body and drinks. Adults and
-children walk across the street; purchasing customers stop, receive a drink and
-continue walking, while the vendor gestures. Reduced-motion settings are
-respected. No sprite atlases or embedded suburb bitmaps are required for the PWA
-or the single-file offline build.
+The approved HD suburban illustration is in `assets/hd/suburbs.webp`. Vendor, adult and child characters have **transparent 4-column × 3-row animated sheets** in `assets/hd/{vendor,adult,child}.webp` (1280×1080 atlas, each 320×360). Rows represent idle, walking, and lemonade interaction; `assets/hd/animation.json` defines the layout. Frame bottoms are aligned, animation steps use CSS background-position rather than distorting character pixels, and motion preferences are respected. These are original game illustrations and not copied assets.
+
+Other locations retain original SVG environments. The single-file `play.html` build embeds the HD assets as data URIs for offline use, while the PWA bundles local WebP files without external image dependencies.

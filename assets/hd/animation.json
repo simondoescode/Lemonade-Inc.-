@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "description": "Approved high-definition pixel-art frames normalized to consistent baselines for mobile and desktop.",
+  "frameWidth": 320,
+  "frameHeight": 360,
+  "columns": 4,
+  "rows": 3,
+  "states": {
+    "idle": 0,
+    "walk": 1,
+    "interact": 2
+  },
+  "fps": {
+    "idle": 3,
+    "walk": 8,
+    "interact": 5
+  },
+  "characters": {
+    "vendor": "vendor.webp",
+    "adult": "adult.webp",
+    "child": "child.webp"
+  },
+  "background": {
+    "suburbs": "suburbs.webp",
+    "width": 1672,
+    "height": 941
+  }
+}

@@ -1,7 +1,12 @@
 import {readFileSync,writeFileSync} from 'node:fs';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 let index=read('index.html');
-const styles=read('style.css');
+let styles=read('style.css');
+// Embed the new HD scenery and animation frames so play.html stays self-contained.
+for(const name of ['suburbs','vendor','adult','child']){
+ const img='data:image/webp;base64,'+readFileSync(new URL('../assets/hd/'+name+'.webp',import.meta.url)).toString('base64');
+ styles=styles.replaceAll('./assets/hd/'+name+'.webp',img);
+}
 
 const logoData='data:image/webp;base64,'+readFileSync(new URL('../assets/lemonade-inc-logo.webp',import.meta.url)).toString('base64');
 const iconData='data:image/webp;base64,'+readFileSync(new URL('../assets/lemonade-inc-icon.webp',import.meta.url)).toString('base64');
