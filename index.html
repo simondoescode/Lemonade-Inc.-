@@ -53,6 +53,8 @@
           <div class="scene-stage" id="scene-stage" role="img" aria-label="Illustrated lemonade stand and neighbourhood">
             <div id="scene-art" class="scene-art"></div><div id="scene-people" class="scene-people" aria-hidden="true"></div>
             <div class="scene-toast" id="scene-toast" aria-hidden="true"></div>
+            <div class="queue-counter" id="scene-queue" hidden aria-live="off">👥 <span id="queue-count">0</span> waiting</div>
+            <div class="scene-feedback" id="scene-feedback" aria-live="polite" aria-atomic="true"></div>
           </div>
           <div class="scene-stats"><div><small>👣 PASSERS-BY</small><b id="live-visitors">—</b></div><div><small>🥤 DRINKS SOLD</small><b id="live-sold">—</b></div><div><small>💵 REVENUE</small><b id="live-revenue">—</b></div><div><small>❤️ SATISFACTION</small><b id="live-satisfaction">—</b></div></div>
           <div class="scene-action" id="scene-action"><button type="button" class="primary-button" id="open-day">OPEN FOR BUSINESS <span>➜</span></button><p id="action-hint">Ready to make some customers smile?</p></div>
