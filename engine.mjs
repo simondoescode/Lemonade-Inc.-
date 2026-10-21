@@ -142,21 +142,34 @@ export function simulateDay(state){
   if(s.staff.includes('mascot'))patience*=1.45;
   const timeline=[];
   let sold=0,walked=0,notInterested=0,stockouts=0,queueWalks=0,remaining=0,nextAvailable=0,pitchers=0;
+  let peakQueue=0,waitMinutes=0,queuedCustomers=0;
   for(let k=0;k<visitors;k++){
     const at=(k+r()*.7)/visitors*480;
-    if(r()>willingness){notInterested++;timeline.push({type:'pass',at});continue;}
+    if(r()>willingness){
+      notInterested++;timeline.push({type:'pass',at,reaction:'browsing'});continue;
+    }
     const servedAt=Math.max(at,nextAvailable);
-    if(servedAt-at>patience){walked++;queueWalks++;timeline.push({type:'queue',at});continue;}
-    if(s.inventory.cups<=0){walked++;stockouts++;timeline.push({type:'stockout',at});continue;}
+    const wait=Math.max(0,servedAt-at);
+    // Only customers who can be served before closing can make a purchase.
+    // The virtual queue uses exactly the same capacity and patience as the report.
+    const queueAhead=wait>0?Math.max(1,Math.ceil(wait/service)):0;
+    if(wait>patience||servedAt+service>480){
+      walked++;queueWalks++;timeline.push({type:'queue',at,wait,queueAhead,reaction:'impatient'});continue;
+    }
+    if(s.inventory.cups<=0){
+      walked++;stockouts++;timeline.push({type:'stockout',at,wait:0,queueAhead:0,reaction:'sold-out'});continue;
+    }
     if(remaining===0){
       if(['lemons','sugar','ice'].some(i=>s.inventory[i]<s.recipe[i])){
-        walked++;stockouts++;timeline.push({type:'stockout',at});continue;
+        walked++;stockouts++;timeline.push({type:'stockout',at,wait:0,queueAhead:0,reaction:'sold-out'});continue;
       }
       for(const i of ['lemons','sugar','ice'])s.inventory[i]-=s.recipe[i];
       pitchers++;remaining=12;
     }
     remaining--;s.inventory.cups--;sold++;nextAvailable=servedAt+service;
-    timeline.push({type:'sold',at});
+    if(wait>0){queuedCustomers++;waitMinutes+=wait;peakQueue=Math.max(peakQueue,queueAhead);}
+    const delighted=quality>=65&&s.price<=fairPrice*1.25;
+    timeline.push({type:'sold',at,servedAt,wait,queueAhead,reaction:delighted?'happy':'okay'});
   }
   const revenue=round(sold*s.price);
   const overhead=dailyCosts(s);
@@ -173,7 +186,7 @@ export function simulateDay(state){
   const currentBank=round(s.cash);
   const cashFlow=round(s.cash-state.bankAtLastClose);
   const report={day,location:loc.id,locationName:loc.name,weather:wx.kind,temp:wx.temp,news:wx.news.text,
-    visitors,sold,walked,notInterested,stockouts,queueWalks,pitchers,quality,satisfaction,
+    visitors,sold,walked,notInterested,stockouts,queueWalks,queuedCustomers,peakQueue,averageWait:queuedCustomers?round(waitMinutes/queuedCustomers):0,pitchers,quality,satisfaction,
     revenue,overhead,ingredients:spentSupplies,profit,cashFlow,paidForStock:s.pendingPurchases,paidForUpgrades:s.pendingCapital,
     expiredIce,expiredLemons,bank:currentBank,rep:Math.round(s.reputation[loc.id]),fairPrice:round(fairPrice)};
   s.totalSold+=sold;s.totalRevenue=round(s.totalRevenue+revenue);
