@@ -136,44 +136,96 @@ function reportDialog(){const r=game.lastReport,positive=r.profit>=0;showDialog(
 <div class="dialog-insight">💡 ${e(reportAdvice(r))}${r.queuedCustomers?" · "+r.queuedCustomers+" waited in line (average "+r.averageWait+" game-minutes).":""}</div><div class="dialog-actions"><button class="secondary-button" data-action="report-stats">View stats</button>${game.finished?"":'<button class="secondary-button" data-action="shop-upgrades">⚡ Upgrade stand</button>'}<button class="primary-button" data-action="continue-day">${game.finished?'VIEW CHALLENGE RESULTS' :'PLAN TOMORROW ➜'}</button></div>`);}
 function challengeDialog(){const total=game.history.reduce((a,b)=>a+(Number(b.profit)||0),0);const last=game.history.at(-1);showDialog(`<div class="dialog-art">🏅</div><p class="eyebrow">30-DAY CHALLENGE COMPLETE</p><h2>What a squeeze!</h2><p>You've finished a whole month of running your own lemonade empire.</p><div class="dialog-grid"><div class="dialog-stat"><small>CUPS SOLD</small><b>${game.totalSold}</b></div><div class="dialog-stat"><small>TOTAL REVENUE</small><b>${money(game.totalRevenue)}</b></div><div class="dialog-stat"><small>TOTAL OPERATING PROFIT</small><b>${money(total)}</b></div><div class="dialog-stat"><small>FINAL CASH</small><b>${money(last?.bank||game.cash)}</b></div></div><div class="dialog-actions"><button class="secondary-button" data-action="report-stats">See charts</button><button class="primary-button" data-action="new-game">PLAY AGAIN ➜</button></div>`);}
 function newRun(mode){firstRun=false;if(simFrame)cancelAnimationFrame(simFrame);simFrame=0;sim=null;game=newGame(mode,Math.floor(Date.now()%2147483647));phase='planning';activeTab='recipe';mobileView='home';$('scene-people').innerHTML='';hideDialog();store();render();notify('New '+mode+' game. Make something delicious!');}
-function spawnVisitor(type){
- const parent=$('scene-people');
- if(parent.querySelectorAll('.hd-customer').length>=7)parent.querySelector('.hd-customer')?.remove();
- const customer=document.createElement('span');
- const character=Math.random()<.38?'child':'adult';
- const sold=type==='sold';
- const place=HD_SCENE_SPOTS[$('scene-stage').dataset.location]||HD_SCENE_SPOTS.suburbs;
- const duration=4.6+Math.random()*.9;
- customer.className='hd-customer'+(sold?' sale':'');
- customer.setAttribute('aria-hidden','true');
- customer.style.setProperty('--visitor-y',(place.walkY+(Math.random()-.5)*6)+'%');
- customer.style.setProperty('--stop-x',place.stopX+'%');
- customer.style.setProperty('--walk-duration',duration+'s');
- customer.innerHTML='<span class="hd-sprite hd-sprite--'+character+'"></span>';
- parent.appendChild(customer);
- if(sold){
-   setTimeout(()=>{
-     if(!customer.isConnected)return;
-     customer.classList.add('interacting');
-     const vendor=parent.querySelector('.stand-vendor');
-     vendor?.classList.add('serving');
-     setTimeout(()=>{
-       if(!customer.isConnected)return;
-       customer.classList.remove('interacting');
-       vendor?.classList.remove('serving');
-     },duration*230);
-   },duration*420);
- }
- customer.addEventListener('animationend',event=>{
-   if(event.target===customer)customer.remove();
- },{once:true});
+
+function showStreetFeedback(message){
+ const el=$('scene-feedback');el.textContent=message;el.classList.add('visible');
+ clearTimeout(feedbackTimer);feedbackTimer=setTimeout(()=>el.classList.remove('visible'),1150);
 }
-function flashSale(){const el=$('scene-toast');el.textContent='🥤 SOLD! +'+money(game.price);el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),600);}
-function updateLive(){const s=sim;if(!s)return;$('live-visitors').textContent=liveVisitors;$('live-sold').textContent=liveSold;$('live-revenue').textContent=money(liveSold*game.price);$('live-satisfaction').textContent=s.report.quality+'%';}
-function frame(t){if(phase!=='running'||!sim)return;const progress=clamp((t-runStart)/12500,0,1);const count=Math.floor(sim.timeline.length*progress);while(runCount<count){const ev=sim.timeline[runCount++];liveVisitors++;if(ev.type==='sold'){liveSold++;if(runCount%5===0){flashSale();beep('sale');}}else if(ev.type!=='pass'){liveWalked++;}if(runCount%3===0||ev.type==='sold'&&runCount%4===0)spawnVisitor(ev.type);}updateLive();if(progress<1)simFrame=requestAnimationFrame(frame);else finishDay();}
-function openDay(){if(phase!=='planning')return;const result=simulateDay(game);if(result.error){notify(result.error);activeTab='supplies';mobileView='supplies';renderPanel();return;}sim=result;phase='running';mobileView='home';liveSold=0;liveVisitors=0;liveWalked=0;runCount=0;runStart=0;$('scene-people').innerHTML='';render();runStart=performance.now();simFrame=requestAnimationFrame(frame);beep();}
-function finishDay(){if(phase!=='running'||!sim)return;if(simFrame)cancelAnimationFrame(simFrame);simFrame=0;phase='report';mobileView='home';game=sim.next;sim=null;store();$('scene-people').innerHTML='';render();reportDialog();}
-function continueDay(tab='recipe'){hideDialog();if(game.finished){activeTab='results';mobileView='results';render();challengeDialog();return;}phase='planning';activeTab=tab;mobileView=tab==='upgrades'?'business':'home';render();}
+function spawnVisitor(ev,index){
+ const parent=$('scene-people');
+ if(parent.querySelectorAll('.hd-customer').length>=8)parent.querySelector('.hd-customer')?.remove();
+ const person=document.createElement('span');
+ const character=(index*7+game.day)%5===0?'child':'adult';
+ const sold=ev.type==='sold',queued=sold&&ev.queueAhead>0&&ev.wait>1.2;
+ const turnedAway=ev.type==='queue'||ev.type==='stockout';
+ const place=HD_SCENE_SPOTS[$('scene-stage').dataset.location]||HD_SCENE_SPOTS.suburbs;
+ const duration=4.1+(index%4)*.25;
+ const reaction=sold?(ev.reaction==='happy'?'Yum! 🍋':'Thanks!'):ev.type==='queue'?'Too slow!':ev.type==='stockout'?'Sold out!':'';
+ person.className='hd-customer'+(sold?' sale':'')+(queued?' queued':'')+(turnedAway?' turned-away unhappy':'')+(ev.reaction==='happy'?' happy':'');
+ person.setAttribute('aria-hidden','true');
+ person.style.setProperty('--visitor-y',(place.walkY+((index%5)-2)*1.1)+'%');
+ person.style.setProperty('--stop-x',place.stopX+'%');
+ person.style.setProperty('--queue-x',Math.min(86,place.stopX+9+Math.min(3,ev.queueAhead||0)*6)+'%');
+ person.style.setProperty('--walk-duration',duration+'s');
+ person.innerHTML='<span class="hd-sprite hd-sprite--'+character+'"></span>'+(reaction?'<span class="reaction-bubble">'+e(reaction)+'</span>':'');
+ parent.appendChild(person);
+ if(sold){
+  const vendor=parent.querySelector('.stand-vendor');
+  setTimeout(()=>{if(!person.isConnected||phase!=='running')return;person.classList.add('interacting');vendor?.classList.add('serving');},duration*(queued?.60:.43)*1000);
+  setTimeout(()=>{person.classList.remove('interacting');vendor?.classList.remove('serving');},duration*.79*1000);
+ }
+ person.addEventListener('animationend',event=>{if(event.target===person)person.remove();},{once:true});
+ setTimeout(()=>person.remove(),duration*1000+300);
+}
+function flashSale(){
+ const el=$('scene-toast');el.textContent='🥤 +'+money(game.price);
+ el.classList.add('show');clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>el.classList.remove('show'),650);
+}
+function updateLive(){
+ if(!sim)return;
+ $('live-visitors').textContent=liveVisitors;
+ $('live-sold').textContent=liveSold;
+ $('live-revenue').textContent=money(round(liveSold*game.price));
+ $('live-satisfaction').textContent='—';
+}
+function frame(t){
+ if(phase!=='running'||!sim)return;
+ const progress=clamp((t-runStart)/12500,0,1),minute=480*progress;
+ while(playbackIndex<playback.length&&playback[playbackIndex].at<=minute){
+  const step=playback[playbackIndex++],ev=step.event;
+  if(step.kind==='arrival'){
+   liveVisitors++;
+   if(ev.type==='queue'||ev.type==='stockout')liveWalked++;
+   if(t-lastVisualAt>490||liveVisitors<=2){spawnVisitor(ev,step.index);lastVisualAt=t;}
+   if(ev.type==='stockout'&&t-lastFeedbackAt>1350){showStreetFeedback('😞 Out of stock — lost a customer');lastFeedbackAt=t;}
+   else if(ev.type==='queue'&&t-lastFeedbackAt>1500){showStreetFeedback('⌛ Queue too long — customer left');lastFeedbackAt=t;}
+  }else{
+   liveSold++;
+   if(t-lastFeedbackAt>560){flashSale();showStreetFeedback('🥤 Sold for '+money(game.price));beep('sale');lastFeedbackAt=t;}
+  }
+ }
+ let queue=0;
+ for(const ev of sim.timeline)if(ev.type==='sold'&&ev.at<=minute&&ev.servedAt>minute)queue++;
+ $('queue-count').textContent=String(queue);
+ updateLive();
+ if(progress<1)simFrame=requestAnimationFrame(frame);else finishDay();
+}
+function openDay(){
+ if(phase!=='planning')return;
+ const result=simulateDay(game);
+ if(result.error){notify(result.error);activeTab='supplies';mobileView='supplies';renderPanel();return;}
+ sim=result;phase='running';mobileView='home';
+ liveSold=0;liveVisitors=0;liveWalked=0;playbackIndex=0;lastVisualAt=-1000;lastFeedbackAt=-1000;
+ playback=result.timeline.flatMap((event,index)=>[
+  {kind:'arrival',at:event.at,event,index},
+  ...(event.type==='sold'?[{kind:'sale',at:event.servedAt,event,index}]:[])
+ ]).sort((a,b)=>a.at-b.at||(a.kind==='arrival'?-1:1));
+ runStart=0;$('scene-people').innerHTML='';
+ render();runStart=performance.now();simFrame=requestAnimationFrame(frame);beep();
+}
+function finishDay(){
+ if(phase!=='running'||!sim)return;
+ if(simFrame)cancelAnimationFrame(simFrame);
+ simFrame=0;phase='report';mobileView='home';game=sim.next;sim=null;playback=[];
+ clearTimeout(feedbackTimer);clearTimeout(toastTimer);
+ $('scene-people').innerHTML='';render();store();reportDialog();
+}
+function continueDay(tab='recipe'){
+ hideDialog();
+ if(game.finished){activeTab='results';mobileView='results';render();challengeDialog();return;}
+ phase='planning';activeTab=tab;mobileView=tab==='upgrades'?'business':'home';render();
+}
 function exportSave(){const a=document.createElement('a');const blob=new Blob([JSON.stringify(game,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);a.href=url;a.download=`squeeze-street-day-${game.day}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('Your game save has been exported.');}
 function onClick(ev){const mobileNav=ev.target.closest('[data-mobile-nav]');if(mobileNav){selectMobileView(mobileNav.dataset.mobileNav);beep();return;}const tab=ev.target.closest('[data-tab]');if(tab){activeTab=tab.dataset.tab;if(window.matchMedia('(max-width:830px)').matches)mobileView=BUSINESS_TABS.has(activeTab)?'business':activeTab;renderPanel();beep();return;}
  const btn=ev.target.closest('[data-action]');if(!btn||btn.disabled)return;const {action,item,index,id,value}=btn.dataset;
