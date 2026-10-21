@@ -6,17 +6,17 @@ The Vite PWA plugin generates the web manifest and a Workbox service worker, pre
 
 # 🍋 Lemonade Inc. — Squeeze Street
 
-**Lemonade Inc.** is a lively, original browser game inspired by the *genre* of classic lemonade stand / tycoon simulations. Runs on desktop and mobile. Built from scratch in JavaScript and inline SVG with **no external dependencies, servers or third-party game assets**.
+**Lemonade Inc.** is a lively, original browser game inspired by the *genre* of classic lemonade stand / tycoon simulations. Runs on desktop and mobile. Built from scratch in JavaScript with custom HD pixel-art assets, **no runtime network requirement or third-party game artwork**.
 
 ## Play locally
 
-For the simplest offline experience, **double-click `play.html`**. All code and styling are embedded in that one file. You can also serve the project as normal:
+For the simplest offline experience, **double-click the latest generated `play.html`**. All code and styling are embedded in that one file. You can also serve the project as normal:
 
 ```sh
 python3 -m http.server 8000
 ```
 
-Open http://localhost:8000. Or run `npm run dev` (Node 22+, fully offline). No build step required to run the modular version. Run `npm run build:standalone` after changing the source to regenerate `play.html`.
+Open http://localhost:8000. Or run `npm run dev` (Node 22+, fully offline). No build step required to run the modular version. Run `npm run build:standalone` after changing the source to regenerate `play.html`. Every `npm run build` automatically regenerates that file and publishes the matching standalone copy as `dist/play.html`.
 
 ## Publish to GitHub Pages
 
@@ -74,3 +74,16 @@ The `assets/lemonade-inc-icon.webp` and `assets/lemonade-inc-logo.webp` graphics
 The approved HD suburban illustration is in `assets/hd/suburbs.webp`. Vendor, adult and child characters have **transparent 4-column × 3-row animated sheets** in `assets/hd/{vendor,adult,child}.webp` (1280×1080 atlas, each 320×360). Rows represent idle, walking, and lemonade interaction; `assets/hd/animation.json` defines the layout. Frame bottoms are aligned, animation steps use CSS background-position rather than distorting character pixels, and motion preferences are respected. These are original game illustrations and not copied assets.
 
 All six locations now use original HD isometric backgrounds: **Suburbs, Park, Beach, Station, Downtown and Mall**. Each 1672×941 WebP is stored under `assets/hd/`, with the same vendor/adult/child sprite animation system layered above. Positions are configured per scene in `HD_SCENE_SPOTS` in `app.mjs` so the characters appear near each location’s lemonade cart. The older SVG scenery remains available only as a fallback for unknown locations. The single-file `play.html` build embeds all nine HD images as data URIs for offline use, while the PWA bundles local WebP files without external image dependencies.
+
+## v0.2 — The Living City Update
+
+The **Plan → Sell → Review → Upgrade** loop now has a guided step indicator. Plan stock, recipe, price, staff and location; open the stand to see your simulated working day; review an actionable post-day report; then open Upgrades directly to reinvest before the next day.
+
+- Each deterministic customer event includes an arrival time, outcome and (when purchased) a service time. An actual waiting queue respects staff/upgrade service speed, customer patience, closing time and inventory.
+- A sample of pedestrians animate over the matching HD location artwork. Customers can walk past, queue, receive lemonade or turn away; their pixel speech bubbles give feedback.
+- Live visitor, sale and revenue counters are advanced from simulation events, not arbitrary animation intervals. The visible queue indicator tracks the same service schedule as the business ledger.
+- The end-of-day report explains stockouts, customer impatience, quality or overhead problems and offers **Upgrade stand** alongside planning the next day.
+- Existing local saves and JSON imports retain their version-1 schema; the gameplay additions only extend ephemeral timelines and optional report fields.
+- Reduced-motion preferences, the bottom-tab mobile PWA and all HD environment assets are preserved.
+
+Run `npm run check && npm test && npm run build`. GitHub Actions also compiles the standalone offline edition for deployment. The standalone file under `dist/play.html` is produced by the build and can be opened without a server.
