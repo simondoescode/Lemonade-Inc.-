@@ -262,3 +262,52 @@ body{overflow:hidden}
 .scene-stage[data-location] .stand-vendor{
  left:var(--stand-x,30%);bottom:var(--stand-y,37%);
 }
+
+
+/* v0.2 — real customer journeys and a tiny, readable storefront HUD. */
+.scene-queue-placeholder{display:none}
+.queue-counter{position:absolute;z-index:9;top:10px;right:10px;background:#fff3caee;border:2px solid #7b5b59;color:#4e3d4a;padding:5px 9px;border-radius:10px;font-size:12px;font-weight:900;box-shadow:2px 3px 0 #58445a55;pointer-events:none}
+.queue-counter[hidden]{display:none!important}
+.scene-feedback{position:absolute;left:10px;bottom:10px;z-index:9;max-width:74%;padding:5px 9px;border-radius:9px;background:#fff4cfeb;color:#4a3d42;border:2px solid #8c695f;box-shadow:2px 3px 0 #58445a55;font-size:12px;font-weight:900;opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s;pointer-events:none}
+.scene-feedback.visible{opacity:1;transform:translateY(0)}
+.hd-customer.queued{animation-name:hd-queue-route}
+.hd-customer.turned-away{animation-name:hd-turn-route}
+.hd-customer .reaction-bubble{position:absolute;left:38%;top:-19px;padding:3px 6px;white-space:nowrap;border-radius:7px;background:#fff7d9;color:#51404a;border:2px solid #80616b;font-size:11px;font-weight:900;line-height:1.15;opacity:0;box-shadow:1px 2px 0 #57455055;animation:hd-reaction var(--walk-duration,5s) linear both}
+.hd-customer.happy .reaction-bubble{color:#187c55}
+.hd-customer.unhappy .reaction-bubble{color:#c4474d}
+.hd-customer .hd-sprite{will-change:background-position}
+@keyframes hd-queue-route{
+  0%{left:-12%}
+  28%,53%{left:var(--queue-x,47%)}
+  66%,79%{left:var(--stop-x,34%)}
+  100%{left:110%}
+}
+@keyframes hd-turn-route{
+  0%{left:-12%}
+  42%,64%{left:var(--queue-x,43%)}
+  100%{left:110%}
+}
+@keyframes hd-reaction{
+  0%,43%{opacity:0;transform:translateY(4px)}
+  50%,71%{opacity:1;transform:translateY(0)}
+  84%,100%{opacity:0;transform:translateY(-6px)}
+}
+.day-steps{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;margin:0 auto 8px;font-size:10px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#786a68}
+.day-steps span{border-radius:7px;padding:3px 7px;background:#f4e6ca}
+.day-steps span.current{background:#f7d760;color:#483a41;box-shadow:0 2px #d4a54b}
+.day-steps span.complete{color:#357958;background:#d8efd4}
+.day-steps b{color:#ae997e;font-size:11px}
+.dialog-insight{margin:10px 0;padding:9px 11px;text-align:left;background:#fff2ce;border:2px solid #d7b983;border-radius:11px;color:#58434a;font-size:13px;line-height:1.45}
+.dialog-actions .secondary-button{white-space:normal}
+@media(max-width:500px){
+  .hd-customer .reaction-bubble{font-size:10px;top:-15px}
+  .queue-counter{top:6px;right:6px;font-size:10px;padding:3px 6px}
+  .scene-feedback{font-size:10px;left:6px;bottom:6px;padding:3px 6px}
+  .day-steps{font-size:9px;margin-bottom:5px}
+  .day-steps span{padding:2px 4px}
+}
+@media(prefers-reduced-motion:reduce){
+  .scene-feedback{transition:none}
+  .hd-customer .reaction-bubble{animation:none;opacity:1}
+  .hd-customer{animation:none!important;left:var(--queue-x,45%)}
+}
