@@ -1,5 +1,6 @@
 import {VERSION,STORAGE_KEY,STOCK_ITEMS,BUNDLES,LOCATIONS,UPGRADES,STAFF,clamp,money,round,forecast,newGame,dailyCosts,changeRecipe,buyStock,chooseLocation,setAdvertising,setPrice,buyUpgrade,toggleStaff,recipeScore,costEstimate,startValidation,simulateDay,isValidSave,locationById} from './engine.mjs';
 import {sceneSVG} from './scene.mjs';
+import {STAND_FEATURES,standTier,standFeatures,renderStandEvolution,renderStaffCostume} from './stand-art.mjs';
 
 
 const $=id=>document.getElementById(id);
@@ -39,9 +40,13 @@ function pricePanel(){const wx=forecast(game.seed,game.day);return `${panelHeadi
 function placesPanel(){return `${panelHeading('Pick your pitch','Foot traffic increases with rent — and so does risk.','📍')}
   <div class="place-list">${LOCATIONS.map(l=>`<div class="place-option ${game.location===l.id?'chosen':''}"><span>${LOCATION_ICONS[l.id]}</span><div class="place-info"><strong>${e(l.name)}</strong><small>${e(l.tag)} · ${Math.round(game.reputation[l.id]||42)}% local reputation</small></div><button type="button" class="tiny-button ${game.location===l.id?'secondary':''}" data-action="location" data-id="${l.id}" ${phase!=='planning'||game.location===l.id?'disabled':''}>${game.location===l.id?'HERE':l.rent===0?'FREE':money(l.rent)+'/day'}</button></div>`).join('')}</div>
   ${tipBox('🗺️','Your neighbourhood matters',activeLocation().desc)}`;}
-function upgradePanel(){return `${panelHeading('Level up your stand','One-time purchases that unlock permanent advantages.','⚡')}
- <div class="upgrade-list">${UPGRADES.map(u=>`<div class="upgrade-option ${game.upgrades.includes(u.id)?'owned':''}"><span>${u.icon}</span><div class="upgrade-info"><strong>${e(u.name)}</strong><small>${e(u.detail)}</small></div><button type="button" class="tiny-button ${game.upgrades.includes(u.id)?'secondary':''}" data-action="upgrade" data-id="${u.id}" ${phase!=='planning'||game.upgrades.includes(u.id)||game.cash<u.price?'disabled':''}>${game.upgrades.includes(u.id)?'OWNED':money(u.price)}</button></div>`).join('')}</div>`;}
-function staffPanel(){const wage=STAFF.filter(s=>game.staff.includes(s.id)).reduce((a,s)=>a+s.wage,0);return `${panelHeading('Meet your crew','Hire great people to handle bigger lines.','🧑‍🍳')}
+function upgradePanel(){
+ const owned=standFeatures(game.upgrades);
+ return `${panelHeading('Level up your stand','Every purchase transforms your stand in the living city.','⚡')}
+ <div class="upgrade-showcase"><div class="upgrade-showcase-info"><strong>🏪 ${e(standTier(game.upgrades))}</strong><small>${owned.length} of ${STAND_FEATURES.length} visual upgrades installed</small><button type="button" class="tiny-button" data-action="view-stand">VIEW STAND ➜</button></div><div class="upgrade-showcase-art" aria-hidden="true"><div class="upgrade-showcase-scene"></div><div class="upgrade-showcase-overlay">${renderStandEvolution(game.upgrades)}</div></div></div>
+ <div class="upgrade-list">${UPGRADES.map(u=>`<div class="upgrade-option ${game.upgrades.includes(u.id)?'owned':''}"><span>${u.icon}</span><div class="upgrade-info"><strong>${e(u.name)}</strong><small>${e(u.detail)}</small></div><button type="button" class="tiny-button ${game.upgrades.includes(u.id)?'secondary':''}" data-action="upgrade" data-id="${u.id}" ${phase!=='planning'||game.upgrades.includes(u.id)||game.cash<u.price?'disabled':''}>${game.upgrades.includes(u.id)?'INSTALLED':money(u.price)}</button></div>`).join('')}</div>`;
+}
+function staffPanel(){const wage=STAFF.filter(s=>game.staff.includes(s.id)).reduce((a,s)=>a+s.wage,0);return `${panelHeading('Meet your crew','Your team appears in the street and works alongside you.','🧑‍🍳')}
   <div class="upgrade-list">${STAFF.map(s=>`<div class="upgrade-option ${game.staff.includes(s.id)?'owned':''}"><span>${s.icon}</span><div class="upgrade-info"><strong>${e(s.name)}</strong><small>${e(s.detail)} · ${money(s.wage)}/day</small></div><button type="button" class="tiny-button ${game.staff.includes(s.id)?'secondary':''}" data-action="staff" data-id="${s.id}" ${phase!=='planning'?'disabled':''}>${game.staff.includes(s.id)?'FIRE':'HIRE'}</button></div>`).join('')}</div>
   ${tipBox('💵','Daily wage bill',`Your team costs ${money(wage)} per day. Wages are paid when you open, so budget before hiring!`,'warm')}`;}
 function resultsPanel(){const h=game.history.slice(-12),highest=Math.max(15,...h.map(x=>Math.abs(Number(x.profit)||0)));const best=game.history.length?Math.max(...game.history.map(x=>Number(x.profit)||0)):0;
@@ -87,10 +92,12 @@ function renderScene(){const report=phase==='report'?game.lastReport:null;const 
  const place=HD_SCENE_SPOTS[id];
  stage.style.setProperty('--stand-x',(place?.vendorX??49)+'%');
  stage.style.setProperty('--stand-y',(place?.vendorY??18)+'%');
- $('scene-art').innerHTML=place
-   ? '<div class="hd-neighbourhood hd-neighbourhood--'+id+'" aria-hidden="true"></div>'
-   : sceneSVG(id,weather);
- // HD character sprites animate above the scenic background.
+ $('scene-art').innerHTML=(place
+    ? '<div class="hd-neighbourhood hd-neighbourhood--'+id+'" aria-hidden="true"></div>'
+    : sceneSVG(id,weather))+'<div class="stand-evolution" aria-hidden="true">'+renderStandEvolution(game.upgrades)+'</div>';
+ stage.dataset.standTier=game.upgrades.includes('kiosk')?'kiosk':game.upgrades.length?'upgraded':'classic';
+ stage.setAttribute('aria-label',locationById(id).name+' lemonade stand, '+standTier(game.upgrades)+', '+game.staff.length+' crew members.');
+  // HD character sprites animate above the scenic background.
  const people=$('scene-people');
  if(!people.querySelector('.stand-vendor')){
    const vendor=document.createElement('span');
@@ -98,8 +105,21 @@ function renderScene(){const report=phase==='report'?game.lastReport:null;const 
    vendor.setAttribute('aria-hidden','true');
    vendor.innerHTML='<span class="hd-sprite hd-sprite--vendor" aria-hidden="true"></span>';
    people.appendChild(vendor);
- }
- $('scene-status').textContent=phase==='running'?'LIVE ON THE STREET':phase==='report'?'DAY COMPLETE':'READY TO OPEN';
+  }
+  // Hired staff occupy the active stand, and react during every real sale.
+  people.querySelectorAll('.crew-actor').forEach(actor=>actor.remove());
+  const crewOffsets={cashier:10,helper:-10,mascot:place?.vendorX>58?-21:21};
+  for(const role of STAFF.filter(member=>game.staff.includes(member.id))){
+    const actor=document.createElement('span');
+    actor.className='crew-actor crew-actor--'+role.id+(phase==='running'?' on-shift':'');
+    actor.dataset.role=role.id;
+    actor.setAttribute('aria-hidden','true');
+    actor.style.left=clamp((place?.vendorX??49)+crewOffsets[role.id],6,92)+'%';
+    actor.style.bottom=clamp((place?.vendorY??18)-2,5,82)+'%';
+    actor.innerHTML=(role.id==='mascot'?'':'<span class="hd-sprite hd-sprite--'+(role.id==='cashier'?'adult':'vendor')+'"></span>')+renderStaffCostume(role.id);
+    people.appendChild(actor);
+  }
+  $('scene-status').textContent=phase==='running'?'LIVE ON THE STREET':phase==='report'?'DAY COMPLETE':'READY TO OPEN';
  $('scene-queue').hidden=phase!=='running';
  if(phase!=='running')$('scene-feedback').classList.remove('visible');
  $('scene-status').parentElement.classList.toggle('running',phase==='running');
@@ -167,6 +187,14 @@ function spawnVisitor(ev,index){
  person.addEventListener('animationend',event=>{if(event.target===person)person.remove();},{once:true});
  setTimeout(()=>person.remove(),duration*1000+300);
 }
+function celebrateCrewSale(){
+ const people=$('scene-people');
+ for(const actor of people.querySelectorAll('.crew-actor,.stand-vendor')){
+  actor.classList.add('serving');
+  if(actor.crewTimer)clearTimeout(actor.crewTimer);
+  actor.crewTimer=setTimeout(()=>actor.classList.remove('serving'),700);
+ }
+}
 function flashSale(){
  const el=$('scene-toast');el.textContent='🥤 +'+money(game.price);
  el.classList.add('show');clearTimeout(toastTimer);
@@ -192,6 +220,7 @@ function frame(t){
    else if(ev.type==='queue'&&t-lastFeedbackAt>1500){showStreetFeedback('⌛ Queue too long — customer left');lastFeedbackAt=t;}
   }else{
    liveSold++;
+   celebrateCrewSale();
    if(t-lastFeedbackAt>560){flashSale();showStreetFeedback('🥤 Sold for '+money(game.price));beep('sale');lastFeedbackAt=t;}
   }
  }
@@ -229,7 +258,7 @@ function continueDay(tab='recipe'){
 function exportSave(){const a=document.createElement('a');const blob=new Blob([JSON.stringify(game,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);a.href=url;a.download=`squeeze-street-day-${game.day}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('Your game save has been exported.');}
 function onClick(ev){const mobileNav=ev.target.closest('[data-mobile-nav]');if(mobileNav){selectMobileView(mobileNav.dataset.mobileNav);beep();return;}const tab=ev.target.closest('[data-tab]');if(tab){activeTab=tab.dataset.tab;if(window.matchMedia('(max-width:830px)').matches)mobileView=BUSINESS_TABS.has(activeTab)?'business':activeTab;renderPanel();beep();return;}
  const btn=ev.target.closest('[data-action]');if(!btn||btn.disabled)return;const {action,item,index,id,value}=btn.dataset;
- if(action==='close-dialog'){hideDialog();return;}if(action==='new-game'){chooseGameDialog();return;}if(action==='select-mode'){newRun(id);return;}if(action==='report-stats'){hideDialog();activeTab='results';render();return;}if(action==='continue-day'){continueDay();return;}if(action==='shop-upgrades'){continueDay('upgrades');return;}if(action==='skip-day'){finishDay();return;}if(action==='open-day'){openDay();return;}
+ if(action==='close-dialog'){hideDialog();return;}if(action==='new-game'){chooseGameDialog();return;}if(action==='select-mode'){newRun(id);return;}if(action==='report-stats'){hideDialog();activeTab='results';render();return;}if(action==='continue-day'){continueDay();return;}if(action==='shop-upgrades'){continueDay('upgrades');return;}if(action==='view-stand'){mobileView='home';renderPanel();return;}if(action==='skip-day'){finishDay();return;}if(action==='open-day'){openDay();return;}
  if(phase!=='planning')return;
  switch(action){
  case 'recipe-down':apply(changeRecipe(game,item,game.recipe[item]-1));break;
