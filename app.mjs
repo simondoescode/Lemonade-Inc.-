@@ -10,7 +10,7 @@ const LOCATION_ICONS={suburbs:'🏡',park:'🌳',beach:'🏖️',station:'🚉',
 const WEATHER_ICONS={'Sunny':'☀️','Partly cloudy':'🌤️','Cloudy':'☁️','Rainy':'🌧️','Heatwave':'🥵'};
 const TIPS=['Higher prices make each sale worth more, but fewer people may buy.','On hotter days customers crave extra ice. On cool days, use less!','Leftover ice melts overnight. Buy it just before opening.','Your reputation is different in each location. Build a loyal crowd!','Busy locations are great, but fast service matters just as much.','A good recipe is about balance. More ingredients do not always mean better lemonade.'];
 function load(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const obj=JSON.parse(raw);if(isValidSave(obj))return obj;}}catch{}return newGame('career',20261017);}
-let game=load(),phase='planning',activeTab='recipe',mobileView='home',sim=null,simFrame=0,runStart=0,runCount=0,liveSold=0,liveWalked=0,liveVisitors=0,sound=false,toastTimer=0,notificationTimer=0,firstRun=(()=>{try{return !localStorage.getItem(STORAGE_KEY);}catch{return true;}})();
+let game=load(),phase='planning',activeTab='recipe',mobileView='home',sim=null,simFrame=0,runStart=0,runCount=0,liveSold=0,liveWalked=0,liveVisitors=0,playback=[],playbackIndex=0,lastVisualAt=-1000,lastFeedbackAt=-1000,feedbackTimer=0,sound=false,toastTimer=0,notificationTimer=0,firstRun=(()=>{try{return !localStorage.getItem(STORAGE_KEY);}catch{return true;}})();
 let audioContext=null;
 const store=()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(game));}catch{notify('Saving is disabled by this browser. Use Export save.');}};
 const activeLocation=()=>locationById(game.location);
@@ -99,18 +99,22 @@ function renderScene(){const report=phase==='report'?game.lastReport:null;const 
    vendor.innerHTML='<span class="hd-sprite hd-sprite--vendor" aria-hidden="true"></span>';
    people.appendChild(vendor);
  }
- $('scene-status').textContent=phase==='running'?'BUSINESS IS BOOMING':phase==='report'?'DAY COMPLETE':'READY TO OPEN';
+ $('scene-status').textContent=phase==='running'?'LIVE ON THE STREET':phase==='report'?'DAY COMPLETE':'READY TO OPEN';
+ $('scene-queue').hidden=phase!=='running';
+ if(phase!=='running')$('scene-feedback').classList.remove('visible');
  $('scene-status').parentElement.classList.toggle('running',phase==='running');
  const stats=report?{visitors:report.visitors,sold:report.sold,revenue:report.revenue,satisfaction:report.satisfaction}:null;
  $('live-visitors').textContent=stats?stats.visitors:'—';$('live-sold').textContent=stats?stats.sold:'—';$('live-revenue').textContent=stats?money(stats.revenue):'—';$('live-satisfaction').textContent=stats?stats.satisfaction+'%':'—';
  const action=$('scene-action');
+ const activeStep=phase==='running'?1:phase==='report'?2:activeTab==='upgrades'?3:0;
+ const daySteps='<div class="day-steps" aria-label="Business day progress">'+['Plan','Sell','Review','Upgrade'].map((label,i)=>'<span class="'+(i===activeStep?'current':i<activeStep?'complete':'')+'">'+label+'</span>'+(i<3?'<b>›</b>':'')).join('')+'</div>';
  if(phase==='planning'){
    const problem=startValidation(game);
-   action.innerHTML=`<button type="button" class="primary-button" data-action="open-day" ${problem?'disabled':''}>OPEN FOR BUSINESS <span>➜</span></button><p>${e(problem||`Today's fixed costs: ${money(dailyCosts(game))} · Weather: ${wx.kind.toLowerCase()}`)}</p>`;
+   action.innerHTML=`${daySteps}<button type="button" class="primary-button" data-action="open-day" ${problem?'disabled':''}>OPEN FOR BUSINESS <span>➜</span></button><p>${e(problem||`Today's fixed costs: ${money(dailyCosts(game))} · Weather: ${wx.kind.toLowerCase()}`)}</p>`;
  }else if(phase==='running'){
-   action.innerHTML=`<button type="button" class="primary-button" data-action="skip-day">SKIP TO DAY REPORT <span>⏩</span></button><p>Customers are tasting your lemonade. Every cup counts!</p>`;
+   action.innerHTML=`${daySteps}<button type="button" class="primary-button" data-action="skip-day">SKIP TO DAY REPORT <span>⏩</span></button><p>Customers are tasting your lemonade. Every cup counts!</p>`;
  }else{
-   action.innerHTML=`<button type="button" class="primary-button" data-action="continue-day">${game.finished?'CHALLENGE COMPLETE':'PLAN NEXT DAY'} <span>➜</span></button><p>View your report or get ready for another round.</p>`;
+   action.innerHTML=`${daySteps}<button type="button" class="primary-button" data-action="continue-day">${game.finished?'CHALLENGE COMPLETE':'PLAN NEXT DAY'} <span>➜</span></button><p>View your report or get ready for another round.</p>`;
  }
 }
 function render(){ $('metric-day').textContent=String(game.day>1&&phase==='report'?game.day-1:game.day).padStart(2,'0');$('metric-sold').textContent=game.totalSold.toLocaleString();$('metric-cash').textContent=money(game.cash);renderForecast();renderPanel();renderInventory();renderInsight();renderScene();$('sound-toggle').textContent=sound?'🔊':'🔇';$('sound-toggle').setAttribute('aria-label',sound?'Disable sound':'Enable sound');}
@@ -119,10 +123,17 @@ function apply(result){if(result?.error){notify(result.error);return;}if(result?
 function showDialog(markup){$('dialog').innerHTML=markup;$('overlay').hidden=false;$('dialog').querySelector('button')?.focus();}
 function hideDialog(){$('overlay').hidden=true;}
 function chooseGameDialog(first=false){showDialog(`<div class="dialog-art">🍋</div><p class="eyebrow">WELCOME TO SQUEEZE STREET</p><h2>${first?'A little stand. A lot of potential.':'Start a fresh adventure?'}</h2><p>Build your own lemonade empire from just $40. Which adventure will you play?</p><button type="button" class="mode-card" data-action="select-mode" data-id="career"><b>🌴 Career mode</b><small>No time limit. Experiment with your perfect recipe and grow at your own pace.</small></button><button type="button" class="mode-card" data-action="select-mode" data-id="challenge"><b>⏰ 30-day challenge</b><small>How much can you earn in just 30 in-game days?</small></button>${first?'':`<div class="dialog-actions"><button class="secondary-button" data-action="close-dialog">Cancel</button></div>`}`);}
-function reportDialog(){const r=game.lastReport,positive=r.profit>=0;showDialog(`<div class="dialog-art">${positive?'🏆':'🧃'}</div><p class="eyebrow">DAY ${String(r.day).padStart(2,'0')} · ${e(r.locationName)}</p><h2>${positive?'Sweet success!':'A learning day!'}</h2><p>${r.sold} happy customers bought a glass today. ${r.walked?`${r.walked} visitors walked away.`:'No one was turned away.'}</p>
+function reportAdvice(r){
+ if(r.stockouts>0)return 'Out of supplies! You lost '+r.stockouts+' customers; restock before opening.';
+ if(r.queueWalks>0)return r.queueWalks+' people abandoned the queue. Faster equipment or more patience could help.';
+ if(r.satisfaction<60)return 'Try a better recipe or friendlier price tomorrow.';
+ if(r.profit<0)return 'Your running costs exceeded sales. Consider cheaper rent, staffing or advertising.';
+ return 'Excellent work! Consider reinvesting your earnings in faster equipment.';
+}
+function reportDialog(){const r=game.lastReport,positive=r.profit>=0;showDialog(`<div class="dialog-art">${positive?'🏆':'🧃'}</div><p class="eyebrow">DAY ${String(r.day).padStart(2,'0')} · ${e(r.locationName)}</p><h2>${positive?'Sweet success!':'A learning day!'}</h2><p>${r.sold} customers bought a glass today. ${r.walked?`${r.walked} visitors walked away.`:'No one was turned away.'}</p>
 <div class="dialog-grid"><div class="dialog-stat"><small>🥤 CUPS SOLD</small><b>${r.sold}</b></div><div class="dialog-stat"><small>💵 REVENUE</small><b>${money(r.revenue)}</b></div><div class="dialog-stat"><small>🧾 DAILY PROFIT</small><b class="${positive?'positive':'negative'}">${money(r.profit)}</b></div><div class="dialog-stat"><small>❤️ SATISFACTION</small><b>${r.satisfaction}%</b></div></div>
 <div class="hint-box" style="text-align:left;margin:10px 0"><span>📋</span><div><b>Today's accounting</b><p>Rent, marketing & wages: ${money(r.overhead)} · Ingredients used (est.): ${money(r.ingredients)} · Cash movement including purchases: ${money(r.cashFlow)}. ${r.expiredIce} ice cubes melted overnight.</p></div></div>
-<div class="dialog-actions"><button class="secondary-button" data-action="report-stats">View stats</button><button class="primary-button" data-action="continue-day">${game.finished?'VIEW CHALLENGE RESULTS':'NEXT DAY ➜'}</button></div>`);}
+<div class="dialog-insight">💡 ${e(reportAdvice(r))}${r.queuedCustomers?" · "+r.queuedCustomers+" waited in line (average "+r.averageWait+" game-minutes).":""}</div><div class="dialog-actions"><button class="secondary-button" data-action="report-stats">View stats</button>${game.finished?"":'<button class="secondary-button" data-action="shop-upgrades">⚡ Upgrade stand</button>'}<button class="primary-button" data-action="continue-day">${game.finished?'VIEW CHALLENGE RESULTS' :'PLAN TOMORROW ➜'}</button></div>`);}
 function challengeDialog(){const total=game.history.reduce((a,b)=>a+(Number(b.profit)||0),0);const last=game.history.at(-1);showDialog(`<div class="dialog-art">🏅</div><p class="eyebrow">30-DAY CHALLENGE COMPLETE</p><h2>What a squeeze!</h2><p>You've finished a whole month of running your own lemonade empire.</p><div class="dialog-grid"><div class="dialog-stat"><small>CUPS SOLD</small><b>${game.totalSold}</b></div><div class="dialog-stat"><small>TOTAL REVENUE</small><b>${money(game.totalRevenue)}</b></div><div class="dialog-stat"><small>TOTAL OPERATING PROFIT</small><b>${money(total)}</b></div><div class="dialog-stat"><small>FINAL CASH</small><b>${money(last?.bank||game.cash)}</b></div></div><div class="dialog-actions"><button class="secondary-button" data-action="report-stats">See charts</button><button class="primary-button" data-action="new-game">PLAY AGAIN ➜</button></div>`);}
 function newRun(mode){firstRun=false;if(simFrame)cancelAnimationFrame(simFrame);simFrame=0;sim=null;game=newGame(mode,Math.floor(Date.now()%2147483647));phase='planning';activeTab='recipe';mobileView='home';$('scene-people').innerHTML='';hideDialog();store();render();notify('New '+mode+' game. Make something delicious!');}
 function spawnVisitor(type){
@@ -162,11 +173,11 @@ function updateLive(){const s=sim;if(!s)return;$('live-visitors').textContent=li
 function frame(t){if(phase!=='running'||!sim)return;const progress=clamp((t-runStart)/12500,0,1);const count=Math.floor(sim.timeline.length*progress);while(runCount<count){const ev=sim.timeline[runCount++];liveVisitors++;if(ev.type==='sold'){liveSold++;if(runCount%5===0){flashSale();beep('sale');}}else if(ev.type!=='pass'){liveWalked++;}if(runCount%3===0||ev.type==='sold'&&runCount%4===0)spawnVisitor(ev.type);}updateLive();if(progress<1)simFrame=requestAnimationFrame(frame);else finishDay();}
 function openDay(){if(phase!=='planning')return;const result=simulateDay(game);if(result.error){notify(result.error);activeTab='supplies';mobileView='supplies';renderPanel();return;}sim=result;phase='running';mobileView='home';liveSold=0;liveVisitors=0;liveWalked=0;runCount=0;runStart=0;$('scene-people').innerHTML='';render();runStart=performance.now();simFrame=requestAnimationFrame(frame);beep();}
 function finishDay(){if(phase!=='running'||!sim)return;if(simFrame)cancelAnimationFrame(simFrame);simFrame=0;phase='report';mobileView='home';game=sim.next;sim=null;store();$('scene-people').innerHTML='';render();reportDialog();}
-function continueDay(){hideDialog();if(game.finished){activeTab='results';mobileView='results';render();challengeDialog();return;}phase='planning';activeTab='recipe';render();}
+function continueDay(tab='recipe'){hideDialog();if(game.finished){activeTab='results';mobileView='results';render();challengeDialog();return;}phase='planning';activeTab=tab;mobileView=tab==='upgrades'?'business':'home';render();}
 function exportSave(){const a=document.createElement('a');const blob=new Blob([JSON.stringify(game,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);a.href=url;a.download=`squeeze-street-day-${game.day}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('Your game save has been exported.');}
 function onClick(ev){const mobileNav=ev.target.closest('[data-mobile-nav]');if(mobileNav){selectMobileView(mobileNav.dataset.mobileNav);beep();return;}const tab=ev.target.closest('[data-tab]');if(tab){activeTab=tab.dataset.tab;if(window.matchMedia('(max-width:830px)').matches)mobileView=BUSINESS_TABS.has(activeTab)?'business':activeTab;renderPanel();beep();return;}
  const btn=ev.target.closest('[data-action]');if(!btn||btn.disabled)return;const {action,item,index,id,value}=btn.dataset;
- if(action==='close-dialog'){hideDialog();return;}if(action==='new-game'){chooseGameDialog();return;}if(action==='select-mode'){newRun(id);return;}if(action==='report-stats'){hideDialog();activeTab='results';render();return;}if(action==='continue-day'){continueDay();return;}if(action==='skip-day'){finishDay();return;}if(action==='open-day'){openDay();return;}
+ if(action==='close-dialog'){hideDialog();return;}if(action==='new-game'){chooseGameDialog();return;}if(action==='select-mode'){newRun(id);return;}if(action==='report-stats'){hideDialog();activeTab='results';render();return;}if(action==='continue-day'){continueDay();return;}if(action==='shop-upgrades'){continueDay('upgrades');return;}if(action==='skip-day'){finishDay();return;}if(action==='open-day'){openDay();return;}
  if(phase!=='planning')return;
  switch(action){
  case 'recipe-down':apply(changeRecipe(game,item,game.recipe[item]-1));break;
