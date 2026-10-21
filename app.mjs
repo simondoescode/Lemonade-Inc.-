@@ -96,6 +96,7 @@ function renderScene(){const report=phase==='report'?game.lastReport:null;const 
     ? '<div class="hd-neighbourhood hd-neighbourhood--'+id+'" aria-hidden="true"></div>'
     : sceneSVG(id,weather))+'<div class="stand-evolution" aria-hidden="true">'+renderStandEvolution(game.upgrades)+'</div>';
  stage.dataset.standTier=game.upgrades.includes('kiosk')?'kiosk':game.upgrades.length?'upgraded':'classic';
+ stage.classList.toggle('market-open',phase==='running');
  stage.setAttribute('aria-label',locationById(id).name+' lemonade stand, '+standTier(game.upgrades)+', '+game.staff.length+' crew members.');
   // HD character sprites animate above the scenic background.
  const people=$('scene-people');
