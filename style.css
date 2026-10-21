@@ -251,3 +251,14 @@ body{overflow:hidden}
  .hd-customer{left:var(--stop-x,31%)}
  .stand-vendor.serving .hd-sprite,.hd-customer.interacting .hd-sprite{background-position-x:0%;background-position-y:100%}
 }
+
+/* Individual HD environments. Every location is a unique 1672x941 scene,
+   while the established character atlas and responsive layout are retained. */
+.hd-neighbourhood--park{background-image:url('./assets/hd/park.webp')}
+.hd-neighbourhood--beach{background-image:url('./assets/hd/beach.webp')}
+.hd-neighbourhood--station{background-image:url('./assets/hd/station.webp')}
+.hd-neighbourhood--downtown{background-image:url('./assets/hd/downtown.webp')}
+.hd-neighbourhood--mall{background-image:url('./assets/hd/mall.webp')}
+.scene-stage[data-location] .stand-vendor{
+ left:var(--stand-x,30%);bottom:var(--stand-y,37%);
+}

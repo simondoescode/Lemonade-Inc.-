@@ -22,6 +22,11 @@
   },
   "background": {
     "suburbs": "suburbs.webp",
+    "park": "park.webp",
+    "beach": "beach.webp",
+    "station": "station.webp",
+    "downtown": "downtown.webp",
+    "mall": "mall.webp",
     "width": 1672,
     "height": 941
   }

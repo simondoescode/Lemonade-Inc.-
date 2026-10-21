@@ -3,7 +3,7 @@ const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 let index=read('index.html');
 let styles=read('style.css');
 // Embed the new HD scenery and animation frames so play.html stays self-contained.
-for(const name of ['suburbs','vendor','adult','child']){
+for(const name of ['suburbs','park','beach','station','downtown','mall','vendor','adult','child']){
  const img='data:image/webp;base64,'+readFileSync(new URL('../assets/hd/'+name+'.webp',import.meta.url)).toString('base64');
  styles=styles.replaceAll('./assets/hd/'+name+'.webp',img);
 }

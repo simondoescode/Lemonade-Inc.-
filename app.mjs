@@ -70,13 +70,25 @@ function renderPanel(){syncMobileView();const p=$('control-panel');p.innerHTML=P
 function renderInventory(){const d=$('inventory-card');d.innerHTML=`<h3>📦 YOUR PANTRY <span class="muted">LIVE STOCK</span></h3><div class="inventory-grid">${STOCK_ITEMS.map(i=>`<div>${ICON[i]} <span>${i[0].toUpperCase()+i.slice(1)}</span><b>${game.inventory[i]}</b></div>`).join('')}</div>`;}
 function renderInsight(){const wx=forecast(game.seed,game.day);const low=STOCK_ITEMS.filter(i=>game.inventory[i]<(i==='cups'?12:i==='ice'?game.recipe.ice*2:game.recipe[i]*2));const tip=low.length?'Running low on '+low.map(x=>x).join(', ')+'. Restock before your next busy day!':wx.temp>28?'It’s a scorcher! A good recipe and a higher price may work well today.':TIPS[game.day%TIPS.length];$('insight-card').innerHTML=`<h3>💡 THE DAILY SQUEEZE</h3><p class="tip-copy">${e(tip)}</p>`;}
 function renderForecast(){const report=phase==='report'?game.lastReport:null;const wx=forecast(game.seed,game.day);$('weather-icon').textContent=WEATHER_ICONS[report?.weather||wx.kind]||'🌤️';$('weather-temp').textContent=(report?.temp??wx.temp)+'°C';$('weather-name').textContent=report?.weather||wx.kind;$('news-title').textContent=report?.news||wx.news.text;$('news-effect').textContent=report?'Yesterday’s town buzz':wx.news.effect;}
+// All selectable destinations share the same high-definition pixel-art pipeline.
+const HD_SCENE_SPOTS=Object.freeze({
+ suburbs: {vendorX:30,vendorY:37,stopX:32,walkY:37},
+ park: {vendorX:34,vendorY:40,stopX:36,walkY:40},
+ beach: {vendorX:66,vendorY:52,stopX:68,walkY:52},
+ station: {vendorX:36,vendorY:48,stopX:39,walkY:48},
+ downtown: {vendorX:27,vendorY:52,stopX:30,walkY:52},
+ mall: {vendorX:30,vendorY:45,stopX:34,walkY:45}
+});
 function renderScene(){const report=phase==='report'?game.lastReport:null;const id=report?.location||game.location;const wx=forecast(game.seed,game.day);const weather=report?.weather||wx.kind;
  $('scene-location').textContent=locationById(id).name;
  $('scene-day').textContent='DAY '+String(report?.day||game.day).padStart(2,'0');
  const stage=$('scene-stage');
  stage.dataset.location=id;
- $('scene-art').innerHTML=id==='suburbs'
-   ? '<div class="hd-neighbourhood" aria-hidden="true"></div>'
+ const place=HD_SCENE_SPOTS[id];
+ stage.style.setProperty('--stand-x',(place?.vendorX??49)+'%');
+ stage.style.setProperty('--stand-y',(place?.vendorY??18)+'%');
+ $('scene-art').innerHTML=place
+   ? '<div class="hd-neighbourhood hd-neighbourhood--'+id+'" aria-hidden="true"></div>'
    : sceneSVG(id,weather);
  // HD character sprites animate above the scenic background.
  const people=$('scene-people');
@@ -119,12 +131,12 @@ function spawnVisitor(type){
  const customer=document.createElement('span');
  const character=Math.random()<.38?'child':'adult';
  const sold=type==='sold';
- const suburbs=$('scene-stage').dataset.location==='suburbs';
+ const place=HD_SCENE_SPOTS[$('scene-stage').dataset.location]||HD_SCENE_SPOTS.suburbs;
  const duration=4.6+Math.random()*.9;
  customer.className='hd-customer'+(sold?' sale':'');
  customer.setAttribute('aria-hidden','true');
- customer.style.setProperty('--visitor-y',(suburbs?21+Math.random()*9:13+Math.random()*8)+'%');
- customer.style.setProperty('--stop-x',suburbs?'31%':'49%');
+ customer.style.setProperty('--visitor-y',(place.walkY+(Math.random()-.5)*6)+'%');
+ customer.style.setProperty('--stop-x',place.stopX+'%');
  customer.style.setProperty('--walk-duration',duration+'s');
  customer.innerHTML='<span class="hd-sprite hd-sprite--'+character+'"></span>';
  parent.appendChild(customer);
