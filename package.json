@@ -10,7 +10,9 @@
     "preview": "vite preview --host 0.0.0.0",
     "build:standalone": "node scripts/build-standalone.mjs",
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check engine.mjs && node --check app.mjs && node --check scene.mjs"
+    "check": "node --check engine.mjs && node --check app.mjs && node --check scene.mjs",
+    "prebuild": "npm run build:standalone",
+    "postbuild": "node scripts/copy-standalone.mjs"
   },
   "devDependencies": {
     "vite": "^7.1.0",
