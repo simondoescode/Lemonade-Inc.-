@@ -311,3 +311,71 @@ body{overflow:hidden}
   .hd-customer .reaction-bubble{animation:none;opacity:1}
   .hd-customer{animation:none!important;left:var(--queue-x,45%)}
 }
+
+
+/* v0.3 — additive HD-pixel stand evolution, anchored to the existing artwork. */
+.stand-evolution{
+ position:absolute;left:calc(var(--stand-x,30%) + 1%);
+ bottom:calc(var(--stand-y,37%) - 12%);
+ width:clamp(84px,26%,224px);aspect-ratio:240/164;
+ transform:translateX(-50%);pointer-events:none;z-index:2;
+ filter:drop-shadow(0 3px 1px #364c3e55);
+}
+.stand-evolution svg,.upgrade-showcase-overlay svg{display:block;width:100%;height:100%;image-rendering:pixelated;shape-rendering:crispEdges}
+.stand-neon{filter:drop-shadow(0 1px 3px #ffe572a0)}
+.scene-stage.market-open .stand-neon{animation:stand-sign-glow 1.8s steps(2,end) infinite}
+.scene-stage.market-open .stand-juicer{animation:stand-juicer-work .7s steps(2,end) infinite}
+@keyframes stand-sign-glow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.24)}}
+@keyframes stand-juicer-work{0%,100%{transform:translateY(0)}50%{transform:translateY(1.4px)}}
+.crew-actor{
+ position:absolute;z-index:6;width:64px;height:72px;
+ pointer-events:none;transform-origin:50% 100%;filter:drop-shadow(0 3px 2px #203e3766);
+}
+.crew-actor .hd-sprite{display:block;width:100%;height:100%}
+.crew-actor .staff-outfit{position:absolute;inset:0;display:block;width:100%;height:100%;image-rendering:pixelated;shape-rendering:crispEdges}
+.crew-actor--cashier .staff-outfit{filter:drop-shadow(0 1px 0 #2c6580)}
+.crew-actor--helper .staff-outfit{filter:drop-shadow(0 1px 0 #d2e5d5)}
+.crew-actor--mascot{z-index:7;animation:mascot-greet 1.7s steps(2,end) infinite}
+.crew-actor--cashier.on-shift .staff-outfit{animation:cashier-register 2.2s steps(2,end) infinite}
+.crew-actor--helper.on-shift .staff-outfit{animation:helper-pour 1.9s steps(2,end) infinite}
+.crew-actor.serving .hd-sprite{background-position-y:100%;animation:hd-interact .6s steps(4,end) infinite}
+.crew-actor--cashier.serving .staff-outfit{animation:cashier-register .35s steps(2,end) infinite}
+.crew-actor--helper.serving .staff-outfit{animation:helper-pour .4s steps(2,end) infinite}
+.crew-actor--mascot.serving{animation:mascot-greet .43s steps(2,end) infinite}
+@keyframes cashier-register{0%,75%,100%{transform:translateY(0)}80%,92%{transform:translateY(2px)}}
+@keyframes helper-pour{0%,64%,100%{transform:rotate(0)}72%,86%{transform:rotate(-5deg)}}
+@keyframes mascot-greet{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-3px) rotate(-3deg)}65%{transform:translateY(-1px) rotate(3deg)}}
+.upgrade-showcase{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;
+ padding:11px 12px;margin-bottom:14px;border:2px solid #bd9f71;border-radius:11px;
+ background:linear-gradient(110deg,#fff1c1,#e4f5cf);overflow:hidden;
+}
+.upgrade-showcase-info{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.upgrade-showcase-info strong{font-size:14px;line-height:1.25}
+.upgrade-showcase-info small{font-size:11px;color:#705962}
+.upgrade-showcase-info .tiny-button{min-height:28px;font-size:10px;padding:3px 9px}
+.upgrade-showcase-art{
+ position:relative;flex:0 0 43%;max-width:190px;aspect-ratio:1.65;
+ border:2px solid #92717a;border-radius:8px;overflow:hidden;
+ background:#8dd8ba;
+}
+.upgrade-showcase-scene{
+ position:absolute;inset:0;background-image:url('./assets/hd/suburbs.webp');
+ background-size:cover;background-position:center;
+}
+.upgrade-showcase-overlay{
+ position:absolute;width:64%;height:auto;aspect-ratio:240/164;
+ left:32%;bottom:7%;transform:translateX(-50%);
+ filter:drop-shadow(0 2px 1px #384d3866);
+}
+@media(max-width:500px){
+ .crew-actor{width:48px;height:54px}
+ .stand-evolution{width:clamp(78px,30%,140px)}
+ .upgrade-showcase{padding:8px 9px;gap:7px}
+ .upgrade-showcase-info strong{font-size:12px}
+ .upgrade-showcase-info small{font-size:10px}
+ .upgrade-showcase-art{flex-basis:44%}
+}
+@media(prefers-reduced-motion:reduce){
+ .crew-actor,.crew-actor .staff-outfit,.crew-actor .hd-sprite,.stand-neon,.stand-juicer{animation:none!important}
+}
