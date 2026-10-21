@@ -87,3 +87,23 @@ The **Plan → Sell → Review → Upgrade** loop now has a guided step indicato
 - Reduced-motion preferences, the bottom-tab mobile PWA and all HD environment assets are preserved.
 
 Run `npm run check && npm test && npm run build`. GitHub Actions also compiles the standalone offline edition for deployment. The standalone file under `dist/play.html` is produced by the build and can be opened without a server.
+
+
+## v0.3 — Stand Evolution
+
+Six existing permanent upgrades now affect the **visible HD street scene**, not just business mathematics:
+
+| Upgrade | Physical detail added to the stand |
+| --- | --- |
+| Neon Sign | Lighted overhead lemonade sign |
+| Turbo Juicer | Countertop blender that animates while trading |
+| Chill Cabinet | Blue ice cooler beside the stand |
+| Big Umbrella | Red-and-cream striped canopy |
+| Deluxe Kiosk | A larger timber kiosk counter and surround |
+| Fresh Keeper | Glass-fronted fresh storage fridge |
+
+The physical fittings are composed from original pixel-aligned SVG artwork in `stand-art.mjs`, drawn over the six existing 1672×941 backgrounds. This avoids adding external assets and retains the HD illustrations behind the stand.
+
+Hiring **Quick Cashier**, **Mix Master** or **Sunny Mascot** now spawns a distinct employee alongside the vendor, with costumes, idle motion and sale-linked serving gestures. Existing sprite atlases continue to power character animation; the mascot is an original pixel-drawn lemon costume. The Upgrades tab has a compact miniature showroom and **View stand** button to reveal purchases from the mobile business screen. Reduced-motion settings disable the new looping animations.
+
+**Saves remain compatible:** the version-1 save key and schema are unchanged; ownership continues to use the existing `upgrades` and `staff` arrays. `npm test` includes the new pixel-feature, employee costume, save and deterministic economics regression suite. `npm run build` also regenerates and publishes the matching `dist/play.html` offline edition.
